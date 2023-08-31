@@ -21,7 +21,7 @@
             android:text="@string/prevArrow"
             android:onClick="previousMonthAction"
             android:textColor="@color/blue"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
@@ -29,7 +29,7 @@
             android:layout_weight="2"
             android:layout_height="wrap_content"
             android:id="@+id/month_year_bar"
-            android:text="8월 2023"
+            android:text="@string/_8_2023"
             android:textSize="20sp"
             android:textAlignment="center"
             android:textColor="@color/black"/>
@@ -42,7 +42,7 @@
             android:text="@string/nextArrow"
             android:onClick="nextMonthAction"
             android:textColor="@color/blue"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -116,10 +116,10 @@
             android:textSize="16sp"/>
 
     </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/calendarRecyclerView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-    </androidx.recyclerview.widget.RecyclerView>
 </LinearLayout>
