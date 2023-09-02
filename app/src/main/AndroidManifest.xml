@@ -24,6 +24,6 @@
 
         <activity android:name=".MyCalendar" />
         <activity android:name=".GroupCalendar" />
-
+        <activity android:name=".AddEvent" />
     </application>
 </manifest>

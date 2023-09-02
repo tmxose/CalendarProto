@@ -25,33 +25,46 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:backgroundTint="@color/white"
         android:background="@drawable/rounded_box">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
+            android:layout_height="match_parent"
+            android:gravity="center|top"
+            android:orientation="vertical"
             tools:ignore="UselessParent">
 
             <Button
                 android:id="@+id/buttonPersonalCalendar"
-                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:background="#800080"
-                android:text="@string/personal_calendar" />
+                android:textColor="#FF000000"
+                android:text="@string/personal_calendar"
+                android:background="@drawable/rounded_box"
+                android:backgroundTint="@color/purple_200"/>
 
             <Button
                 android:id="@+id/buttonGroupCalendar"
-                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:background="#800080"
+                android:textColor="#FF000000"
+                android:background="@drawable/rounded_box"
                 android:text="@string/group_calendar" />
 
+            <Button
+                android:id="@+id/addButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_calendar"
+                android:textColor="@color/purple_500"
+                android:background="@drawable/rounded_box"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
+
     </FrameLayout>
 </LinearLayout>

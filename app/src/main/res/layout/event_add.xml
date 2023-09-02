@@ -1,0 +1,56 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F2FF"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".AddEvent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_box"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/editTextEventDate"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="날짜설정 (예: 2023년 9월 1일)"
+            android:inputType="none"
+            android:padding="8dp"
+            android:layout_margin="20dp"/>
+
+        <EditText
+            android:id="@+id/editTextEventTitle"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="일정 제목을 입력하세요"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:layout_margin="20dp"/>
+
+        <EditText
+            android:id="@+id/editTextEventContent"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_margin="20dp"
+            android:hint="일정 내용을 입력하세요"
+            android:inputType="textMultiLine"
+            android:padding="8dp" />
+
+        <Button
+            android:id="@+id/buttonSaveEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="일정 추가"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+</LinearLayout>

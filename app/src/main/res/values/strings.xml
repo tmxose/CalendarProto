@@ -7,4 +7,6 @@
     <string name="nextArrow"><![CDATA[->]]></string>
     <string name="prevArrow"><![CDATA[<-]]></string>
     <string name="_8_2023">8월 2023</string>
+    <string name="add_calendar">add Calendar</string>
+    <string name="add_date">+</string>
 </resources>
