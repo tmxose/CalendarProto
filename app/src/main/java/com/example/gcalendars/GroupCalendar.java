@@ -3,6 +3,7 @@ package com.example.gcalendars;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +15,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class GroupCalendar extends AppCompatActivity {
+public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener{
 
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
@@ -91,5 +92,14 @@ public class GroupCalendar extends AppCompatActivity {
     {
         selectedDate = selectedDate.plusMonths(1);
         setMonthView();
+    }
+    @Override
+    public void onItemClick(int position, String dayText)
+    {
+        if(!dayText.equals(""))
+        {
+            String message = "Selected Date " + dayText + " " + monthYearFromDate(selectedDate);
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        }
     }
 }
