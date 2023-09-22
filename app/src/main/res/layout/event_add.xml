@@ -21,16 +21,18 @@
             android:layout_height="48dp"
             android:clickable="true"
             android:focusable="false"
-            android:hint="날짜설정 (예: 2023년 9월 1일)"
+            android:hint="@string/_2023_9_1"
             android:inputType="none"
             android:padding="8dp"
-            android:layout_margin="20dp"/>
+            android:layout_margin="20dp"
+            tools:ignore="TextFields"
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/editTextEventTitle"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="일정 제목을 입력하세요"
+            android:hint="@string/hint"
             android:inputType="text"
             android:maxLines="1"
             android:padding="8dp"
@@ -41,15 +43,16 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_margin="20dp"
-            android:hint="일정 내용을 입력하세요"
+            android:hint="@string/hint"
             android:inputType="textMultiLine"
-            android:padding="8dp" />
+            android:padding="8dp"
+            android:importantForAutofill="no" />
 
         <Button
             android:id="@+id/buttonSaveEvent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="일정 추가"
+            android:text="@string/addDate"
             android:layout_gravity="center"/>
 
     </LinearLayout>

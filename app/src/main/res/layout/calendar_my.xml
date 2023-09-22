@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F2FF"
@@ -20,6 +21,7 @@
 
     </FrameLayout>
 
+
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
@@ -38,15 +40,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/editTextDate"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                android:text="Year Month Day"/>
+                android:text="@string/year_month_day"/>
 
             <Button
                 android:id="@+id/buttonAdd"

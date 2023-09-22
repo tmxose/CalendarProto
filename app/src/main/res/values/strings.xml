@@ -9,4 +9,17 @@
     <string name="_8_2023">8월 2023</string>
     <string name="add_calendar">add Calendar</string>
     <string name="add_date">+</string>
+    <string name="year_month_day">Year Month Day</string>
+    <string name="_2023_9_1">날짜설정 (예: 2023년 9월 1일)</string>
+    <string name="hint">내용을 입력하세요</string>
+    <string name="addDate">일정 추가</string>
+    <string name="Sun">일요일</string>
+    <string name="Mon">월요일</string>
+    <string name="Tue">화요일</string>
+    <string name="Wed">수요일</string>
+    <string name="Thu">목요일</string>
+    <string name="Fri">금요일</string>
+    <string name="Sat">토요일</string>
+    <string name="_1">1</string>
+
 </resources>

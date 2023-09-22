@@ -21,8 +21,7 @@ public class AddEvent extends AppCompatActivity {
     private EditText eventTitleEditText;
     private EditText eventDateEditText;
     private EditText eventContentEditText;
-    private Button saveButton;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +31,7 @@ public class AddEvent extends AppCompatActivity {
         eventTitleEditText = findViewById(R.id.editTextEventTitle);
         eventDateEditText = findViewById(R.id.editTextEventDate);
         eventContentEditText = findViewById(R.id.editTextEventContent);
-        saveButton = findViewById(R.id.buttonSaveEvent);
+        Button saveButton = findViewById(R.id.buttonSaveEvent);
 
         eventDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override

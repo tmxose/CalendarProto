@@ -17,9 +17,7 @@ import java.util.Locale;
 
 public class MyCalendar extends AppCompatActivity {
     private TextView editTextDate;
-    private Button addButton;
-    private CalendarView calendarView;
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy MM dd", Locale.getDefault());
+    private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy MM dd", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +25,8 @@ public class MyCalendar extends AppCompatActivity {
         setContentView(R.layout.calendar_my);
 
         editTextDate = findViewById(R.id.editTextDate);
-        addButton = findViewById(R.id.buttonAdd);
-        calendarView = findViewById(R.id.calendarView);
+        Button addButton = findViewById(R.id.buttonAdd);
+        CalendarView calendarView = findViewById(R.id.calendarView);
 
         // 캘린더 뷰의 날짜 선택 이벤트 처리
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -55,7 +53,7 @@ public class MyCalendar extends AppCompatActivity {
             }
         });
     }
-
+    // 선택한 날짜 박스에 보여 주는 함수
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
