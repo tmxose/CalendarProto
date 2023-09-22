@@ -44,7 +44,7 @@
                 android:text="@string/prevArrow"
                 android:textColor="@color/blue"
                 android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/monthYearTV"
@@ -65,7 +65,7 @@
                 android:text="@string/nextArrow"
                 android:textColor="@color/blue"
                 android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -142,8 +142,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/calendarRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="10dp"/>
+            android:layout_height="wrap_content"
+            android:padding="10dp" />
 
     </LinearLayout>
 
