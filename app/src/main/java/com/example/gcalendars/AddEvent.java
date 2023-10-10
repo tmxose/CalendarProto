@@ -57,8 +57,8 @@ public class AddEvent extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String selectedDate = year + "년 " + (month + 1) + "월 " + dayOfMonth + "일";
+                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDayOfMonth) {
+                        String selectedDate = selectedYear + "년 " + (selectedMonth + 1) + "월 " + selectedDayOfMonth + "일";
                         eventDateEditText.setText(selectedDate);
                     }
                 }, year, month, day);
