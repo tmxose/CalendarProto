@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class MyCalendar extends AppCompatActivity {
-    private TextView editTextDate; // 선택한 날짜를 표시하는 TextView
+    private TextView editTextDate;  // 선택한 날짜를 표시하는 TextView
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy MM dd", Locale.getDefault());
 
     @Override

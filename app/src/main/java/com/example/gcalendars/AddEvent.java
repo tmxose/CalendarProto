@@ -2,6 +2,7 @@ package com.example.gcalendars;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,6 +58,8 @@ public class AddEvent extends AppCompatActivity {
                     datePickerDialog.dismiss(); // 다이얼로그를 닫습니다.
                 }, year, month, day);
         datePickerDialog.show();
+        datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
+        datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
     }
 
     // 일정을 저장하는 함수
