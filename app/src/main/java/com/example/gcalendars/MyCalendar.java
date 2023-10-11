@@ -42,10 +42,14 @@ public class MyCalendar extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String selectedDate = editTextDate.getText().toString();
+                // 선택한 날짜를 인텐트에 추가
                 Intent intent = new Intent(MyCalendar.this, AddEvent.class);
+                intent.putExtra("selectedDate", selectedDate);
                 startActivity(intent);
             }
         });
+
         editTextDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
