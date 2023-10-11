@@ -23,6 +23,8 @@ public class AddEvent extends AppCompatActivity {
     private EditText eventContentEditText;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    // 다이얼로그를 멤버 변수로 선언
+    private DatePickerDialog datePickerDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,13 +55,14 @@ public class AddEvent extends AppCompatActivity {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+        // 날짜선택 창을 여는 함수
+        datePickerDialog = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDayOfMonth) {
-                        String selectedDate = selectedYear + "년 " + (selectedMonth + 1) + "월 " + selectedDayOfMonth + "일";
+                        String selectedDate = selectedYear + "/" + (selectedMonth + 1) + "/" + selectedDayOfMonth;
                         eventDateEditText.setText(selectedDate);
+                        datePickerDialog.dismiss(); // 다이얼로그를 닫습니다.
                     }
                 }, year, month, day);
 
