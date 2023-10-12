@@ -6,7 +6,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".AddEvent">
+    tools:context=".calendar.AddEvent">
 
 
     <LinearLayout
@@ -36,7 +36,8 @@
             android:inputType="text"
             android:maxLines="1"
             android:padding="8dp"
-            android:layout_margin="20dp"/>
+            android:layout_margin="20dp"
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/editTextEventContent"

@@ -21,5 +21,7 @@
     <string name="Fri">금요일</string>
     <string name="Sat">토요일</string>
     <string name="_1">1</string>
+    <string name="date_title">Date Title</string>
+    <string name="dates_info">Dates Info</string>
 
 </resources>

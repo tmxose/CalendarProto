@@ -1,4 +1,4 @@
-package com.example.gcalendars;
+package com.example.gcalendars.custum;
 
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.gcalendars.R;
 
 import java.time.LocalDate;
 import java.time.YearMonth;

@@ -1,4 +1,4 @@
-package com.example.gcalendars;
+package com.example.gcalendars.custum;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,9 +7,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gcalendars.R;
+
 import java.util.ArrayList;
 
-class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>
+public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>
 {
     private final ArrayList<String> daysOfMonth;
     private final OnItemListener onItemListener;
@@ -25,7 +27,7 @@ class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>
     public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.calendar_cell, parent, false);
+        View view = inflater.inflate(R.layout.calendar_cell, parent, true);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.height = (int) (parent.getHeight() * 0.166666666);
         return new CalendarViewHolder(view, onItemListener);

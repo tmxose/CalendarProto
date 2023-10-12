@@ -22,10 +22,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MyCalendar" />
-        <activity android:name=".GroupCalendar" />
-        <activity android:name=".AddEvent" />
-        <activity android:name=".CalendarAdapter" />
-        <activity android:name=".CalendarViewHolder" />
+        <activity android:name=".calendar.MyCalendar" />
+        <activity android:name=".custum.GroupCalendar" />
+        <activity android:name=".calendar.AddEvent" />
+        <activity android:name=".custum.CalendarAdapter" />
+        <activity android:name=".custum.CalendarViewHolder" />
     </application>
 </manifest>
