@@ -41,6 +41,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
     private void setMonthView()
     {
         monthYearText.setText(monthYearFromDate(selectedDate));
+        calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
         ArrayList<String> daysInMonth = daysInMonthArray(selectedDate);
 
         CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, this);
