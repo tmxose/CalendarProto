@@ -23,5 +23,6 @@
     <string name="_1">1</string>
     <string name="date_title">Date Title</string>
     <string name="dates_info">Dates Info</string>
+    <string name="date_contents">Date Contents</string>
 
 </resources>

@@ -24,7 +24,7 @@ public class CalendarViewHolder extends RecyclerView.ViewHolder implements View.
     {
         onItemListener.onItemClick(getAdapterPosition(), (String) dayOfMonth.getText());
         // 아이템이 클릭되면, 클릭 이벤트를 처리하기 위해 CalendarAdapter의 onItemClick 메서드를 호출
-        // getAdapterPosition()을 사용하여 클릭된 아이템의 위치를 전달하고,
-        // 클릭된 날짜를 문자열로 변환하여 전달합니다.
+        // getAdapterPosition()을 사용하여 클릭된 아이템의 위치를 전달
+        // 클릭된 날짜를 문자열로 변환하여 전달.
     }
 }

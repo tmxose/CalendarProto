@@ -29,6 +29,7 @@
         android:background="@drawable/rounded_box"
         android:orientation="vertical">
 
+        <!-- 달 이동 버튼 구현-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
