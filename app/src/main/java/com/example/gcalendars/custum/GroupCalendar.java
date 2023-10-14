@@ -125,6 +125,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // 오류 처리 (예: Firebase 연결 오류)
+                Toast.makeText(GroupCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show();
             }
         });
     }
