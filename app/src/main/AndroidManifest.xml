@@ -23,9 +23,9 @@
         </activity>
 
         <activity android:name=".calendar.MyCalendar" />
-        <activity android:name=".custum.GroupCalendar" />
+        <activity android:name=".custom.GroupCalendar" />
         <activity android:name=".calendar.AddEvent" />
-        <activity android:name=".custum.CalendarAdapter" />
-        <activity android:name=".custum.CalendarViewHolder" />
+        <activity android:name=".custom.CalendarAdapter" />
+        <activity android:name=".custom.CalendarViewHolder" />
     </application>
 </manifest>

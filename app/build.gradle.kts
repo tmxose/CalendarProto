@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.gcalendars"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.gcalendars"
         minSdk = 26
-        targetSdk = 32
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 

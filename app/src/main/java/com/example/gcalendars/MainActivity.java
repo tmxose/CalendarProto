@@ -7,7 +7,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gcalendars.calendar.MyCalendar;
-import com.example.gcalendars.custum.GroupCalendar;
+import com.example.gcalendars.custom.GroupCalendar;
 
 public class MainActivity extends AppCompatActivity {
     @Override

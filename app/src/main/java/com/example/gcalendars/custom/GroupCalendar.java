@@ -1,7 +1,9 @@
-package com.example.gcalendars.custum;
+package com.example.gcalendars.custom;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gcalendars.R;
 
+import com.example.gcalendars.calendar.AddEvent;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,7 +40,22 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         initWidgets();
         selectedDate = LocalDate.now();
         setMonthView();
+
+        // "일정 추가" 버튼 클릭 이벤트 처리
+        Button addButton = findViewById(R.id.buttonAdd);
+
+        addButton.setOnClickListener(v -> {
+            // 선택한 날짜를 인텐트에 추가
+            Intent intent = new Intent(GroupCalendar.this, AddEvent.class);
+            intent.putExtra("selectedDate", selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd")));
+            startActivity(intent); // AddEvent 액티비티 시작
+        });
+
+        // "일정 삭제" 버튼 클릭 이벤트 처리
+        Button deleteButton = findViewById(R.id.deleteBtn);
+        deleteButton.setOnClickListener(v -> deleteEventForDate(selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd"))));
     }
+
     // Firebase 데이터베이스 초기화 및 레퍼런스 설정
     private void initFirebase() {
         databaseReference = FirebaseDatabase.getInstance().getReference("your_database_path");
@@ -109,6 +127,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
             displayEventForDate(dayText);
         }
     }
+
     // Firebase에서 해당 날짜의 일정을 가져와 표시하는 메서드
     private void displayEventForDate(final String date) {
         databaseReference.child(date).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -122,10 +141,25 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
                     dateTitle.setVisibility(View.VISIBLE);
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // 오류 처리 (예: Firebase 연결 오류)
                 Toast.makeText(GroupCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // 선택한 날짜의 일정 삭제하는 메서드
+    private void deleteEventForDate(String date) {
+        databaseReference.child(date).removeValue((databaseError, databaseReference) -> {
+            if (databaseError == null) {
+                // 삭제 성공 메시지 표시 또는 다른 작업 수행
+                Toast.makeText(GroupCalendar.this, "일정이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                // 삭제 후 화면 업데이트 등 추가 작업 가능
+            } else {
+                // 삭제 오류 처리
+                Toast.makeText(GroupCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -6,15 +6,10 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gcalendars.R;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,11 +17,8 @@ import java.util.Locale;
 
 public class MyCalendar extends AppCompatActivity {
     private TextView editTextDate;  // 선택한 날짜를 표시하는 TextView
-    private TextView editTextEventTitle;
-    private TextView editTextEventContent;
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy MM dd", Locale.getDefault());
 
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +27,6 @@ public class MyCalendar extends AppCompatActivity {
         Button addButton = findViewById(R.id.buttonAdd); // "일정 추가" 버튼
         // XML 레이아웃에서 해당 TextView 찾기
         editTextDate = findViewById(R.id.editTextDate);
-        editTextEventTitle = findViewById(R.id.editTextEventTitle);
-        editTextEventContent = findViewById(R.id.editTextEventContent);
 
         CalendarView calendarView = findViewById(R.id.calendarView); // CalendarView
 
@@ -46,9 +36,6 @@ public class MyCalendar extends AppCompatActivity {
             selectedCalendar.set(year, month, dayOfMonth);
             String selectedDate = dateFormatter.format(selectedCalendar.getTime());
             editTextDate.setText(selectedDate); // 선택한 날짜를 TextView에 표시
-
-            // 가져온 날짜로 파이어스토어에서 일정 정보를 가져옵니다.
-            loadEventInformation(selectedDate);
         });
 
         addButton.setOnClickListener(v -> {
@@ -78,27 +65,5 @@ public class MyCalendar extends AppCompatActivity {
                 }, year, month, day);
 
         datePickerDialog.show(); // 날짜 선택 다이얼로그 표시
-    }
-
-    // 날짜별로 일정 정보를 가져와 텍스트 뷰에 표시하는 메서드
-    private void loadEventInformation(String selectedDate) {
-        CollectionReference eventsRef = db.collection("events");
-        Query query = eventsRef.whereEqualTo("date", selectedDate);
-
-        query.get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        String eventTitle = document.getString("title");
-                        String eventContent = document.getString("content");
-
-                        // 가져온 데이터를 해당 텍스트 뷰에 설정
-                        editTextEventTitle.setText(eventTitle);
-                        editTextEventContent.setText(eventContent);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    // 오류 처리
-                    Toast.makeText(getApplicationContext(), "일정 정보를 가져오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                });
     }
 }
