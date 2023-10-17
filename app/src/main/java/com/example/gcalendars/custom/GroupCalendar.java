@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gcalendars.R;
 
-import com.example.gcalendars.calendar.AddEvent;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,7 +57,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
 
     // Firebase 데이터베이스 초기화 및 레퍼런스 설정
     private void initFirebase() {
-        databaseReference = FirebaseDatabase.getInstance().getReference("your_database_path");
+        databaseReference = FirebaseDatabase.getInstance().getReference("events");
     }
 
     private void initWidgets() {
@@ -89,10 +88,11 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
 
         for (int i = 1; i <= 42; i++) {
-            if (i <= dayOfWeek || i > daysInMonth + dayOfWeek) {
-                daysInMonthArray.add("");
+            int dayOfMonth = i - dayOfWeek;
+            if (dayOfMonth > 0 && dayOfMonth <= daysInMonth) {
+                daysInMonthArray.add(String.valueOf(dayOfMonth));
             } else {
-                daysInMonthArray.add(String.valueOf(i - dayOfWeek));
+                daysInMonthArray.add("");
             }
         }
         return daysInMonthArray;

@@ -1,4 +1,4 @@
-package com.example.gcalendars.calendar;
+package com.example.gcalendars.custom;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +24,7 @@ public class AddEvent extends AppCompatActivity {
     private DatePickerDialog datePickerDialog;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String selectedDate;
+    String calendarName = "CustomCalendar";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,8 @@ public class AddEvent extends AppCompatActivity {
         eventDateEditText = findViewById(R.id.editTextEventDate);
         eventTitleEditText = findViewById(R.id.editTextEventTitle);
         eventContentEditText = findViewById(R.id.editTextEventContent);
+        RadioGroup privacyRadioGroup = findViewById(R.id.privacyRadioGroup);
+
         Button saveButton = findViewById(R.id.buttonSaveEvent);
 
         // 인텐트 받아오기
@@ -43,7 +47,7 @@ public class AddEvent extends AppCompatActivity {
         eventDateEditText.setOnClickListener(v -> showDateDialog());
 
         // 저장 버튼에 리스너 추가
-        saveButton.setOnClickListener(v -> saveEvent());
+        saveButton.setOnClickListener(v -> saveEvent(privacyRadioGroup));
     }
 
     // 날짜 선택 다이얼로그를 띄우는 함수
@@ -65,10 +69,12 @@ public class AddEvent extends AppCompatActivity {
     }
 
     // 일정을 저장하는 함수
-    private void saveEvent() {
+    private void saveEvent(RadioGroup privacyRadioGroup) {
         String eventTitle = eventTitleEditText.getText().toString();
         String eventDate = eventDateEditText.getText().toString();
         String eventContent = eventContentEditText.getText().toString();
+        String eventPrivacy = getPrivacySelection(privacyRadioGroup);
+
 
         if (!eventTitle.isEmpty() && !eventDate.isEmpty()) {
             Map<String, Object> event = new HashMap<>();
@@ -77,8 +83,8 @@ public class AddEvent extends AppCompatActivity {
             event.put("content", eventContent);
 
             // Firebase Firestore에 일정 정보 업로드
-            db.collection("events")
-                    .add(event)
+            db.collection(calendarName).document(eventPrivacy)
+                    .set(event)
                     .addOnSuccessListener(documentReference -> {
                         Toast.makeText(getApplicationContext(), "일정이 추가되었습니다.", Toast.LENGTH_SHORT).show();
                         finish();
@@ -86,6 +92,14 @@ public class AddEvent extends AppCompatActivity {
                     .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "일정 추가에 실패했습니다.", Toast.LENGTH_SHORT).show());
         } else {
             Toast.makeText(this, "일정 제목과 날짜를 입력해주세요.", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private String getPrivacySelection(RadioGroup privacyRadioGroup) {
+        int selectedId = privacyRadioGroup.getCheckedRadioButtonId();
+        if (selectedId == R.id.radioPublic) {
+            return "public";
+        } else {
+            return "private";
         }
     }
 }
