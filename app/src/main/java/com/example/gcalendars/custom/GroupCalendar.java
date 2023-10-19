@@ -79,7 +79,6 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         calendarRecyclerView.setAdapter(calendarAdapter);
     }
 
-    // 선택한 월의 날짜 목록을 생성하는 메서드
     @NonNull
     private ArrayList<String> daysInMonthArray(LocalDate date) {
         ArrayList<String> daysInMonthArray = new ArrayList<>();
@@ -88,17 +87,29 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         LocalDate firstOfMonth = date.withDayOfMonth(1);
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
 
-        for (int i = 0; i < 42; i++) {
-            if (i <= dayOfWeek || i > daysInMonth + dayOfWeek) {
-                daysInMonthArray.add("");
+        boolean skipped = false; // 0번째 줄을 생략하기 위한 플래그
+
+        for (int i = 1; i <= 42; i++) {
+            if (i <= dayOfWeek) {
+                daysInMonthArray.add(""); // 이전 달의 빈 공간
+                skipped = true;
+            } else if (i > daysInMonth + dayOfWeek) {
+                daysInMonthArray.add(""); // 다음 달의 빈 공간
             } else {
-                int dayOfMonth = i - dayOfWeek + 1; // 1을 더해서 1부터 시작하도록 수정
+                int dayOfMonth = i - dayOfWeek; // 날짜를 채웁니다.
                 daysInMonthArray.add(String.valueOf(dayOfMonth));
+            }
+
+            // 0번째 줄이 모두 공백인 경우 다음 줄을 표시하기 위해 플래그를 사용
+            if (skipped && !daysInMonthArray.get(i - 1).isEmpty()) {
+                skipped = false; // 플래그를 리셋
             }
         }
 
         return daysInMonthArray;
     }
+
+
 
     // 월과 년도를 문자열로 변환
     private String monthYearFromDate(LocalDate date) {
