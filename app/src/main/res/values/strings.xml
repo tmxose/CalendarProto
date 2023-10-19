@@ -27,5 +27,6 @@
     <string name="delete_Date">X</string>
     <string name="privacyPublic">공개 일정</string>
     <string name="privacyPravte">비공개 일정</string>
+    <string name="hint_title">일정 제목을 선택하세요</string>
 
 </resources>

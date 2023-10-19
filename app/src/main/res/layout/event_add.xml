@@ -38,8 +38,10 @@
 
         <EditText
             android:id="@+id/editTextEventDate"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:clickable="true"
             android:focusable="false"
             android:hint="@string/_2023_9_1"
@@ -51,20 +53,22 @@
 
         <EditText
             android:id="@+id/editTextEventTitle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:hint="@string/hint"
+            android:hint="@string/hint_title"
             android:inputType="text"
             android:maxLines="1"
             android:padding="8dp"
-            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/editTextEventContent"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="200dp"
-            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:hint="@string/hint"
             android:inputType="textMultiLine"
             android:padding="8dp"

@@ -89,14 +89,21 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         LocalDate firstOfMonth = selectedDate.withDayOfMonth(1);
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
 
-        for (int i = 1; i <= 42; i++) {
-            int dayOfMonth = i - dayOfWeek;
-            if (dayOfMonth > 0 && dayOfMonth <= daysInMonth) {
-                daysInMonthArray.add(String.valueOf(dayOfMonth));
-            } else {
-                daysInMonthArray.add("");
-            }
+        // 이전 달의 날짜 추가 (dayOfMonth가 1 미만인 경우)
+        for (int i = 1; i < dayOfWeek; i++) {
+            daysInMonthArray.add("");
         }
+
+        for (int i = 1; i <= daysInMonth; i++) {
+            daysInMonthArray.add(String.valueOf(i));
+        }
+
+        // 다음 달의 날짜 추가 (42 - 현재 월의 일수 - 이전 달의 날짜)
+        int remainingDays = 42 - dayOfWeek - daysInMonth;
+        for (int i = 1; i <= remainingDays; i++) {
+            daysInMonthArray.add("");
+        }
+
         return daysInMonthArray;
     }
 
@@ -122,6 +129,9 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
     public void onItemClick(int position, String dayText) {
         // 캘린더의 날짜를 클릭했을 때 호출되는 메서드입니다.
         if (!dayText.equals("")) {
+            int dayOfMonth = Integer.parseInt(dayText);
+            selectedDate = selectedDate.withDayOfMonth(dayOfMonth);
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy/MM/dd");
             String formattedDate = selectedDate.format(formatter);
             dateTextView.setText(formattedDate);

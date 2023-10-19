@@ -42,7 +42,7 @@ public class AddEvent extends AppCompatActivity {
         Intent intent = getIntent();
         // 선택한 날짜를 받아옵니다.
         selectedDate = intent.getStringExtra("selectedDate");
-
+        eventDateEditText.setText(selectedDate);
         // 날짜 선택 버튼에 리스너 추가
         eventDateEditText.setOnClickListener(v -> showDateDialog());
 
@@ -70,16 +70,16 @@ public class AddEvent extends AppCompatActivity {
 
     // 일정을 저장하는 함수
     private void saveEvent(RadioGroup privacyRadioGroup) {
-        String eventTitle = eventTitleEditText.getText().toString();
         String eventDate = eventDateEditText.getText().toString();
+        String eventTitle = eventTitleEditText.getText().toString();
         String eventContent = eventContentEditText.getText().toString();
         String eventPrivacy = getPrivacySelection(privacyRadioGroup);
 
 
         if (!eventTitle.isEmpty() && !eventDate.isEmpty()) {
             Map<String, Object> event = new HashMap<>();
-            event.put("title", eventTitle);
             event.put("date", eventDate);
+            event.put("title", eventTitle);
             event.put("content", eventContent);
 
             // Firebase Firestore에 일정 정보 업로드
