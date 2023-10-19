@@ -58,8 +58,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
 
     // Firebase 데이터베이스 초기화 및 레퍼런스 설정
     private void initFirebase() {
-        String calendarCode = "CustomCalendar";
-        databaseReference = FirebaseDatabase.getInstance().getReference(calendarCode);
+        databaseReference = FirebaseDatabase.getInstance().getReference("events");
     }
 
     private void initWidgets() {
