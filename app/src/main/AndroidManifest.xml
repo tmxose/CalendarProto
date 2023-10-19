@@ -24,7 +24,10 @@
 
         <activity android:name=".calendar.MyCalendar" />
         <activity android:name=".custom.GroupCalendar" />
-        <activity android:name=".custom.AddEvent" />
+        <activity
+            android:name=".custom.AddEvent"
+            android:windowSoftInputMode="adjustResize"
+            />
         <activity android:name=".custom.CalendarAdapter" />
         <activity android:name=".custom.CalendarViewHolder" />
     </application>
