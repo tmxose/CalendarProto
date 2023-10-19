@@ -59,7 +59,7 @@ public class AddEvent extends AppCompatActivity {
 
         datePickerDialog = new DatePickerDialog(this,
                 (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-                    selectedDate = selectedYear + "/" + (selectedMonth + 1) + "/" + selectedDayOfMonth;
+                    selectedDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
                     eventDateEditText.setText(selectedDate);
                     datePickerDialog.dismiss(); // 다이얼로그를 닫습니다.
                 }, year, month, day);
@@ -91,7 +91,7 @@ public class AddEvent extends AppCompatActivity {
                     })
                     .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "일정 추가에 실패했습니다.", Toast.LENGTH_SHORT).show());
         } else {
-            Toast.makeText(this, "일정 제목과 날짜를 입력해주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "일정 제목과 날짜를 입력해 주세요.", Toast.LENGTH_SHORT).show();
         }
     }
     private String getPrivacySelection(RadioGroup privacyRadioGroup) {

@@ -85,22 +85,16 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         ArrayList<String> daysInMonthArray = new ArrayList<>();
         YearMonth yearMonth = YearMonth.from(date);
         int daysInMonth = yearMonth.lengthOfMonth();
-        LocalDate firstOfMonth = selectedDate.withDayOfMonth(1);
+        LocalDate firstOfMonth = date.withDayOfMonth(1);
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
 
-        // 이전 달의 날짜 추가 (dayOfMonth가 1 미만인 경우)
-        for (int i = 1; i < dayOfWeek; i++) {
-            daysInMonthArray.add("");
-        }
-
-        for (int i = 1; i <= daysInMonth; i++) {
-            daysInMonthArray.add(String.valueOf(i));
-        }
-
-        // 다음 달의 날짜 추가 (42 - 현재 월의 일수 - 이전 달의 날짜)
-        int remainingDays = 42 - dayOfWeek - daysInMonth;
-        for (int i = 1; i <= remainingDays; i++) {
-            daysInMonthArray.add("");
+        for (int i = 0; i < 42; i++) {
+            if (i <= dayOfWeek || i > daysInMonth + dayOfWeek) {
+                daysInMonthArray.add("");
+            } else {
+                int dayOfMonth = i - dayOfWeek + 1; // 1을 더해서 1부터 시작하도록 수정
+                daysInMonthArray.add(String.valueOf(dayOfMonth));
+            }
         }
 
         return daysInMonthArray;
@@ -108,7 +102,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
 
     // 월과 년도를 문자열로 변환
     private String monthYearFromDate(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
         return date.format(formatter);
     }
 
@@ -131,7 +125,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
             int dayOfMonth = Integer.parseInt(dayText);
             selectedDate = selectedDate.withDayOfMonth(dayOfMonth);
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy/MM/dd");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
             String formattedDate = selectedDate.format(formatter);
             dateTextView.setText(formattedDate);
             // 선택한 날짜에 대한 이벤트를 가져와 표시
