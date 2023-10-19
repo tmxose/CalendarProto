@@ -166,7 +166,7 @@
             tools:ignore="UselessParent">
 
             <TextView
-                android:id="@+id/editTextDate"
+                android:id="@+id/textDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -201,7 +201,7 @@
         android:layout_margin="10dp">
 
         <TextView
-            android:id="@+id/dateTitle"
+            android:id="@+id/textDateTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/date_title"/>

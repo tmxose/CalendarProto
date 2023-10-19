@@ -58,14 +58,14 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
 
     // Firebase 데이터베이스 초기화 및 레퍼런스 설정
     private void initFirebase() {
-        databaseReference = FirebaseDatabase.getInstance().getReference("events");
+        databaseReference = FirebaseDatabase.getInstance().getReference("CustomCalendar");
     }
 
     private void initWidgets() {
         // XML 레이아웃에서 위젯을 초기화하는 메서드.
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
         monthYearText = findViewById(R.id.monthYearTV);
-        dateTextView = findViewById(R.id.editTextDate); // 수정된 TextView 초기화
+        dateTextView = findViewById(R.id.textDate); // 수정된 TextView 초기화
         initFirebase(); // Firebase 초기화 호출
     }
 
@@ -122,9 +122,9 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
     public void onItemClick(int position, String dayText) {
         // 캘린더의 날짜를 클릭했을 때 호출되는 메서드입니다.
         if (!dayText.equals("")) {
-            String message = "선택한 날짜: " + dayText + " " + monthYearFromDate(selectedDate);
-            dateTextView.setText(message); // TextView에 표시
-
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy/MM/dd");
+            String formattedDate = selectedDate.format(formatter);
+            dateTextView.setText(formattedDate);
             // 선택한 날짜에 대한 이벤트를 가져와 표시
             displayEventForDate(dayText);
         }
@@ -138,7 +138,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
                 String eventText = dataSnapshot.getValue(String.class);
                 if (eventText != null && !eventText.isEmpty()) {
                     // 해당 날짜에 일정이 있는 경우 텍스트 뷰에 표시
-                    TextView dateTitle = findViewById(R.id.dateTitle);
+                    TextView dateTitle = findViewById(R.id.textDateTitle);
                     dateTitle.setText(eventText);
                 }
             }
