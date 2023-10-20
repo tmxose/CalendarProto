@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gcalendars.R;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +84,12 @@ public class AddEvent extends AppCompatActivity {
             event.put("privacy",eventPrivacy);
             event.put("date", eventDate);
             event.put("title", eventTitle);
-            event.put("content", eventContent);
+
+            // 이 부분에서 줄바꿈 처리
+            String[] contentLines = eventContent.split("\n");
+            ArrayList<String> contentList = new ArrayList<>(Arrays.asList(contentLines));
+            event.put("content", contentList);
+
             // Firebase Firestore에 일정 정보 업로드
             db.collection(calendarName).add(event)
                     .addOnSuccessListener(documentReference -> {
