@@ -138,7 +138,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
             String formattedDate = selectedDate.format(formatter);
             dateTextView.setText(formattedDate);
             // 선택한 날짜에 대한 이벤트를 가져와 표시
-            displayEventForDate(dayText);
+            displayEventForDate(formattedDate);
         }
     }
 
