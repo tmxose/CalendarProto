@@ -1,7 +1,10 @@
 package com.example.gcalendars.custom;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,9 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gcalendars.R;
 
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -30,7 +32,8 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
     private LocalDate selectedDate;
     private TextView dateTextView; // 추가된 TextView
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference eventsRef;
+    // Firestore 컬렉션 레퍼런스 설정
+    private final String collectionName = "CustomCalendar";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +43,6 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         selectedDate = LocalDate.now();
         setMonthView();
 
-        // Firestore 컬렉션 레퍼런스 설정
-        String collectionName = "CustomCalendar";
-        eventsRef = db.collection(collectionName);
 
         // "일정 추가" 버튼 클릭 이벤트 처리
         Button addButton = findViewById(R.id.buttonAdd);
@@ -58,7 +58,6 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         Button deleteButton = findViewById(R.id.deleteBtn);
         deleteButton.setOnClickListener(v -> deleteEventForDate(selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd"))));
     }
-
 
 
     private void initWidgets() {
@@ -110,7 +109,6 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
     }
 
 
-
     // 월과 년도를 문자열로 변환
     private String monthYearFromDate(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
@@ -146,38 +144,47 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
 
     // Firebase에서 해당 날짜의 일정을 가져와 표시하는 메서드
     private void displayEventForDate(final String date) {
-        DocumentReference eventRef = eventsRef.document(date);
-
-        eventRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                String eventText = documentSnapshot.getString("title");
-                if (eventText != null && !eventText.isEmpty()) {
-                    // 해당 날짜에 일정이 있는 경우 텍스트 뷰에 표시
-                    TextView dateTitle = findViewById(R.id.textDateTitle);
-                    dateTitle.setText(eventText);
-                }
-            } else {
-                // 해당 날짜에 일정이 없는 경우 처리
-                TextView dateTitle = findViewById(R.id.textDateTitle);
-                dateTitle.setText("일정 없음");
-            }
-        }).addOnFailureListener(e -> {
-            // 오류 처리 (예: Firebase 연결 오류)
-            Toast.makeText(GroupCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show();
-        });
+        // date 필드와 일치하는 문서를 쿼리합니다.
+        db.collection(collectionName).whereEqualTo("date", date)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String eventText = document.getString("title");
+                            if (eventText != null && !eventText.isEmpty()) {
+                                // 해당 날짜에 일정이 있는 경우 텍스트 뷰에 표시
+                                TextView dateTitle = findViewById(R.id.textDateTitle);
+                                dateTitle.setText(eventText);
+                                return; // 일치하는 첫 번째 문서를 찾았으므로 종료
+                            }
+                        }
+                        // 해당 날짜에 일정이 없는 경우 처리
+                        TextView dateTitle = findViewById(R.id.textDateTitle);
+                        dateTitle.setText("일정 없음");
+                    } else {
+                        // 오류 처리 (예: Firebase 연결 오류)
+                        Toast.makeText(GroupCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     // 선택한 날짜의 일정 삭제하는 메서드
     private void deleteEventForDate(String date) {
-        DocumentReference eventRef = eventsRef.document(date);
+        db.collection(collectionName).whereEqualTo("date", date)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                            Toast.makeText(GroupCalendar.this, "일정을 삭제 했습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                }).addOnFailureListener(e -> {
+                    // 삭제 오류 처리
+                    Toast.makeText(GroupCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                });
 
-        eventRef.delete().addOnSuccessListener(aVoid -> {
-            // 삭제 성공 메시지 표시 또는 다른 작업 수행
-            Toast.makeText(GroupCalendar.this, "일정이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-            // 삭제 후 화면 업데이트 등 추가 작업 가능
-        }).addOnFailureListener(e -> {
-            // 삭제 오류 처리
-            Toast.makeText(GroupCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-        });
     }
 }

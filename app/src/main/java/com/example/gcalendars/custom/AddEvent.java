@@ -78,13 +78,12 @@ public class AddEvent extends AppCompatActivity {
 
         if (!eventTitle.isEmpty() && !eventDate.isEmpty()) {
             Map<String, Object> event = new HashMap<>();
+            event.put("privacy",eventPrivacy);
             event.put("date", eventDate);
             event.put("title", eventTitle);
             event.put("content", eventContent);
-
             // Firebase Firestore에 일정 정보 업로드
-            db.collection(calendarName).document(eventPrivacy)
-                    .set(event)
+            db.collection(calendarName).add(event)
                     .addOnSuccessListener(documentReference -> {
                         Toast.makeText(getApplicationContext(), "일정이 추가되었습니다.", Toast.LENGTH_SHORT).show();
                         finish();
