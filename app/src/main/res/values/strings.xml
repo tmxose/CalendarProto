@@ -28,5 +28,8 @@
     <string name="privacyPublic">공개 일정</string>
     <string name="privacyPravte">비공개 일정</string>
     <string name="hint_title">일정 제목을 선택하세요</string>
+    <string name="date_content">Date Content</string>
+    <string name="update">Update</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

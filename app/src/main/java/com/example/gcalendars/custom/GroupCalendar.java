@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gcalendars.R;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -24,6 +25,8 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
 
@@ -34,7 +37,11 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     // Firestore 컬렉션 레퍼런스 설정
     private final String collectionName = "CustomCalendar";
-
+    private String eventId; // 이벤트 ID
+    private String title; // 이벤트 제목
+    private String strDate; // 이벤트 날짜
+    private String content; // 이벤트 내용
+    private String privacy; // 이벤트 프라이버시
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +64,32 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         // "일정 삭제" 버튼 클릭 이벤트 처리
         Button deleteButton = findViewById(R.id.deleteBtn);
         deleteButton.setOnClickListener(v -> deleteEventForDate(selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd"))));
+
+        // 버튼 클릭 이벤트에서 다이얼로그를 표시
+        Button editButton = findViewById(R.id.editButton);
+        editButton.setOnClickListener(v -> {
+            EditEventDialog editDialog = new EditEventDialog(this, eventId, title, strDate, content, privacy);
+            // 이벤트가 업데이트되면 여기에서 Firestore에 업데이트하는 로직을 수행
+            editDialog.setOnEventUpdatedListener(this::updateEvent);
+            editDialog.show();
+        });
+
+
     }
 
+    // 이벤트를 업데이트하는 메서드
+    private void updateEvent(String eventId, String updatedTitle, String updatedDate, String updatedContent, String updatedPrivacy) {
+        DocumentReference eventRef = db.collection(collectionName).document(eventId);
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", updatedTitle);
+        data.put("date", updatedDate);
+        data.put("content", updatedContent);
+        data.put("privacy", updatedPrivacy);
+
+        eventRef.set(data)
+                .addOnSuccessListener(aVoid -> Toast.makeText(GroupCalendar.this, "일정이 업데이트되었습니다.", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(GroupCalendar.this, "일정 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show());
+    }
 
     private void initWidgets() {
         // XML 레이아웃에서 위젯을 초기화하는 메서드.
@@ -150,11 +181,16 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String eventText = document.getString("title");
-                            if (eventText != null && !eventText.isEmpty()) {
+                            eventId = document.getId(); // 이벤트 ID 가져오기
+                            title = document.getString("title"); // 이벤트 제목 가져오기
+                            content = document.getString("content"); // 이벤트 내용 가져오기
+                            privacy = document.getString("privacy"); // 이벤트 프라이버시 가져오기
+                            strDate = document.getString("date");
+
+                            if (title != null && !title.isEmpty()) {
                                 // 해당 날짜에 일정이 있는 경우 텍스트 뷰에 표시
                                 TextView dateTitle = findViewById(R.id.textDateTitle);
-                                dateTitle.setText(eventText);
+                                dateTitle.setText(title);
                                 return; // 일치하는 첫 번째 문서를 찾았으므로 종료
                             }
                         }
@@ -187,4 +223,5 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
                 });
 
     }
+
 }
