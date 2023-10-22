@@ -15,19 +15,19 @@
         android:importantForAutofill="no" />
 
     <EditText
-        android:id="@+id/passwordEditText"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:hint="@string/inputPW"
-        android:inputType="textPassword"
-        android:importantForAutofill="no" />
-
-    <EditText
         android:id="@+id/emailEditText"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/inputEmail"
         android:inputType="textEmailAddress"
+        android:importantForAutofill="no" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="@string/inputPW"
+        android:inputType="textPassword"
         android:importantForAutofill="no" />
 
     <Button

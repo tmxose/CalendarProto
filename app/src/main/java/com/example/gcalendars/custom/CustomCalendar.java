@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
+public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
 
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
@@ -45,7 +45,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.calendar_group);
+        setContentView(R.layout.calendar_custom);
         initWidgets();
         selectedDate = LocalDate.now();
         setMonthView();
@@ -56,7 +56,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
 
         addButton.setOnClickListener(v -> {
             // 선택한 날짜를 인텐트에 추가
-            Intent intent = new Intent(GroupCalendar.this, AddEvent.class);
+            Intent intent = new Intent(CustomCalendar.this, AddEvent.class);
             intent.putExtra("selectedDate", selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd")));
             startActivity(intent); // AddEvent 액티비티 시작
         });
@@ -87,8 +87,8 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
         data.put("privacy", updatedPrivacy);
 
         eventRef.set(data)
-                .addOnSuccessListener(aVoid -> Toast.makeText(GroupCalendar.this, "일정이 업데이트되었습니다.", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(GroupCalendar.this, "일정 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(aVoid -> Toast.makeText(CustomCalendar.this, "일정이 업데이트되었습니다.", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(CustomCalendar.this, "일정 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show());
     }
 
     private void initWidgets() {
@@ -199,7 +199,7 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
                         dateTitle.setText("일정 없음");
                     } else {
                         // 오류 처리 (예: Firebase 연결 오류)
-                        Toast.makeText(GroupCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show();
+                        Toast.makeText(CustomCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -212,14 +212,14 @@ public class GroupCalendar extends AppCompatActivity implements CalendarAdapter.
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             document.getReference().delete();
-                            Toast.makeText(GroupCalendar.this, "일정을 삭제 했습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomCalendar.this, "일정을 삭제 했습니다.", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Log.d(TAG, "Error getting documents: ", task.getException());
                     }
                 }).addOnFailureListener(e -> {
                     // 삭제 오류 처리
-                    Toast.makeText(GroupCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 });
 
     }

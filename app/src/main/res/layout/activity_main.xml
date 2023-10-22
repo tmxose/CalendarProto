@@ -1,10 +1,13 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F2FF"
-    android:gravity="center|top"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+    <!-- 메인 화면 내용 -->
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -25,8 +28,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:backgroundTint="@color/white"
-        android:background="@drawable/rounded_box">
+        android:background="@drawable/rounded_box"
+        android:backgroundTint="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,35 +39,37 @@
             tools:ignore="UselessParent">
 
             <Button
-                android:id="@+id/buttonPersonalCalendar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:textColor="#FF000000"
-                android:text="@string/personal_calendar"
-                android:background="@drawable/rounded_box"
-                android:backgroundTint="@color/purple_200"/>
-
-            <Button
                 android:id="@+id/buttonGroupCalendar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:textColor="#FF000000"
                 android:background="@drawable/rounded_box"
-                android:text="@string/group_calendar" />
+                android:text="@string/group_calendar"
+                android:textColor="#FF000000" />
 
             <Button
                 android:id="@+id/addButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/rounded_box"
                 android:text="@string/add_calendar"
                 android:textColor="@color/purple_500"
-                android:background="@drawable/rounded_box"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
     </FrameLayout>
-</LinearLayout>
+
+
+    <!-- NavigationView (사이드바) -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_menu" />
+
+
+</androidx.drawerlayout.widget.DrawerLayout>

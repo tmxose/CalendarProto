@@ -32,10 +32,16 @@
     <string name="update">Update</string>
     <string name="cancel">Cancel</string>
     <string name="inputEmail">이메일 주소를 입력하세요</string>
-    <string name="inputUsername">아이디를 입력하세요</string>
+    <string name="inputUsername">이름을 입력하세요</string>
     <string name="inputPW">비밀번호를 입력하세요</string>
     <string name="loginLogo">로그인</string>
     <string name="newAccount">회원가입</string>
     <string name="forgotPW">비밀번호 변경</string>
+    <string name="openmenu">메뉴 열기</string>
+    <string name="personalSettings">개인정보 설정</string>
+    <string name="userName">사용자 이름</string>
+    <string name="email">이메일</string>
+    <string name="extra">수정</string>
+    <string name="logout">로그아웃</string>
 
 </resources>
