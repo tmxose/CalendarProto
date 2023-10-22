@@ -4,75 +4,82 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F2FF"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <!-- 메인 화면 내용 -->
-    <LinearLayout
+    <!-- 메인 레이아웃 -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#F5F2FF"
-        android:gravity="center|top"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <FrameLayout
+        <!-- 메인 화면 내용 -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="@drawable/rounded_box">
+            android:background="#F5F2FF"
+            android:gravity="center|top"
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/main_page"
-                android:textColor="#000000" />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="@drawable/rounded_box"
-            android:padding="10dp">
-
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center|top"
-                android:orientation="vertical"
-                tools:ignore="UselessParent">
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/rounded_box">
 
-                <Button
-                    android:id="@+id/buttonCustomCalendar"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:background="@drawable/rounded_box"
-                    android:text="@string/custom_calendar"
-                    android:textColor="#FF000000" />
+                    android:layout_gravity="center"
+                    android:text="@string/main_page"
+                    android:textColor="#000000" />
 
-                <Button
-                    android:id="@+id/addButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:background="@drawable/rounded_box"
-                    android:text="@string/add_calendar"
-                    android:textColor="@color/purple_500"
-                    android:textSize="16sp"
+            </FrameLayout>
 
-                    android:textStyle="bold" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/rounded_box"
+                android:padding="10dp">
 
-            </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center|top"
+                    android:orientation="vertical"
+                    tools:ignore="UselessParent">
 
-        </FrameLayout>
+                    <Button
+                        android:id="@+id/buttonCustomCalendar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:background="@drawable/rounded_box"
+                        android:text="@string/custom_calendar"
+                        android:textColor="#FF000000" />
 
-    </LinearLayout>
+                    <Button
+                        android:id="@+id/addButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:background="@drawable/rounded_box"
+                        android:text="@string/add_calendar"
+                        android:textColor="@color/purple_500"
+                        android:textSize="16sp"
 
-    <!-- NavigationView (사이드바) -->
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- 내비게이션 뷰 -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -80,5 +87,4 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu" />
-
 </androidx.drawerlayout.widget.DrawerLayout>
