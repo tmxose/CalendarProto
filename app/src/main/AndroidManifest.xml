@@ -31,5 +31,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".custom.CalendarAdapter" />
         <activity android:name=".custom.CalendarViewHolder" />
+        <activity android:name=".personalSettings" />
+        <activity android:name=".MyPageActivity"/>
     </application>
 </manifest>

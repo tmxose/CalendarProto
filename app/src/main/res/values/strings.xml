@@ -3,7 +3,7 @@
     <string name="date_schedule">해당 날짜의 일정</string>
     <string name="main_page">메인 페이지</string>
     <string name="personal_calendar">개인 캘린더</string>
-    <string name="group_calendar">그룹 캘린더</string>
+    <string name="custom_calendar">커스텀 캘린더</string>
     <string name="nextArrow"><![CDATA[->]]></string>
     <string name="prevArrow"><![CDATA[<-]]></string>
     <string name="_8_2023">8월 2023</string>

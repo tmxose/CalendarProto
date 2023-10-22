@@ -24,9 +24,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button buttonGroupCalendar = findViewById(R.id.buttonGroupCalendar);
+        Button buttonCustomCalendar = findViewById(R.id.buttonCustomCalendar);
 
-        buttonGroupCalendar.setOnClickListener(v -> {
+        buttonCustomCalendar.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CustomCalendar.class);
             startActivity(intent);
         });
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         }else if (id == R.id.menu_profile_settings) {
             // "개인정보 설정" 메뉴를 눌렀을 때의 동작을 여기에 추가
             // 예: 개인정보 설정 화면으로 이동
-            Intent intent = new Intent(this, MyPageActivity.class);
+            Intent intent = new Intent(this, personalSettings.class);
             startActivity(intent);
             return true;
         }
