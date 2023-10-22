@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/usernameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="@string/inputUsername"
+        android:inputType="text"
+        android:importantForAutofill="no" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="@string/inputPW"
+        android:inputType="textPassword"
+        android:importantForAutofill="no" />
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="@string/inputEmail"
+        android:inputType="textEmailAddress"
+        android:importantForAutofill="no" />
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/newAccount" />
+</LinearLayout>
