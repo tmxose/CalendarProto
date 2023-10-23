@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gcalendars.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -35,10 +36,13 @@ public class AddEvent extends AppCompatActivity {
 
     // Firebase 인증을 통해 현재 로그인한 사용자의 UID를 가져옵니다.
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    String userUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
+    FirebaseUser user = auth.getCurrentUser();
 
-    // Firestore에 컬렉션을 만듭니다.
-    String collectionName = userUid + "_" + calendarName; // 사용자 UID와 캘린더 이름을 조합하여 컬렉션 이름 생성
+    // 사용자 이름 가져오기
+    String userName = Objects.requireNonNull(user).getDisplayName();
+
+    // 컬렉션 이름 설정
+    String collectionName = userName + "_" + calendarName;
 
 
     @Override

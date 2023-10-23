@@ -19,8 +19,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
-    String collectionName = getIntent().getStringExtra("COLLECTION_NAME");
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,11 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button buttonCustomCalendar = findViewById(R.id.buttonCustomCalendar);
 
-        buttonCustomCalendar.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, CustomCalendar.class);
-            intent.putExtra("COLLECTION_NAME", collectionName); // "COLLECTION_NAME"이라는 키로 데이터 전송
-            startActivity(intent);
-        });
+        buttonCustomCalendar.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, CustomCalendar.class)));
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -58,10 +52,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }else if (id == R.id.menu_profile_settings) {
             // "개인정보 설정" 메뉴를 눌렀을 때의 동작을 여기에 추가
-            // 예: 개인정보 설정 화면으로 이동
-            Intent intent = new Intent(this, personalSettings.class);
-            intent.putExtra("COLLECTION_NAME", collectionName); // "COLLECTION_NAME"이라는 키로 데이터 전송
-            startActivity(intent);
+            startActivity(new Intent(this, personalSettings.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

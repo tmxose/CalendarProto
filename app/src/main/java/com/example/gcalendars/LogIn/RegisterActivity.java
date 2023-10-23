@@ -12,10 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.gcalendars.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText usernameEditText, passwordEditText, emailEditText;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
         Button registerButton = findViewById(R.id.registerButton);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         registerButton.setOnClickListener(v -> handleRegistration());
     }
@@ -45,26 +51,45 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        sendEmailVerification(); // 이메일 인증 이메일 전송
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            // Firestore에 사용자 정보 저장
+                            saveUserDataToFirestore(user.getUid(), username, email);
+                            sendEmailVerification(user);
+                        }
                     } else {
                         Toast.makeText(RegisterActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void sendEmailVerification() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            user.sendEmailVerification()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, "이메일 인증 이메일이 전송되었습니다.", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                            finish();
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "이메일 인증 이메일 전송 실패", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
+    private void saveUserDataToFirestore(String uid, String username, String email) {
+        // "users" 컬렉션에 사용자 정보 저장
+        db.collection("users")
+                .document(uid)
+                .set(getUserData(username, email))
+                .addOnSuccessListener(aVoid -> Toast.makeText(RegisterActivity.this, "사용자 정보 저장 성공", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "사용자 정보 저장 실패", Toast.LENGTH_SHORT).show());
+    }
+
+    private Map<String, Object> getUserData(String username, String email) {
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("username", username);
+        userData.put("email", email);
+
+        return userData;
+    }
+
+    private void sendEmailVerification(FirebaseUser user) {
+        user.sendEmailVerification()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(RegisterActivity.this, "이메일 인증 이메일이 전송되었습니다.", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(RegisterActivity.this, "이메일 인증 이메일 전송 실패", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
