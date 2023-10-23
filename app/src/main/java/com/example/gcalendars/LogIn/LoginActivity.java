@@ -12,10 +12,20 @@ import com.example.gcalendars.MainActivity;
 import com.example.gcalendars.R;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText, passwordEditText;
     private FirebaseAuth mAuth;
 
+    private final String calendarName = "CustomCalendar";
+
+    // Firebase 인증을 통해 현재 로그인한 사용자의 UID를 가져옵니다.
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    String userUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
+
+    // Firestore에 컬렉션을 만듭니다.
+    private final String collectionName = userUid + "_" + calendarName; // 사용자 UID와 캘린더 이름을 조합하여 컬렉션 이름 생성
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +60,9 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // 로그인 성공
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.putExtra("COLLECTION_NAME", collectionName); // "COLLECTION_NAME"이라는 키로 데이터 전송
+                        startActivity(intent);
                         finish(); // 로그인 액티비티 종료
                     } else {
                         // 로그인 실패
