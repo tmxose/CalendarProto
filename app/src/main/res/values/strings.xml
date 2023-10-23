@@ -43,5 +43,6 @@
     <string name="email">이메일</string>
     <string name="extra">수정</string>
     <string name="logout">로그아웃</string>
+    <string name="toMain">메인으로</string>
 
 </resources>

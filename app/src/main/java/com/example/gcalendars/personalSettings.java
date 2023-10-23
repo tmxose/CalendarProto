@@ -39,6 +39,11 @@ public class personalSettings extends AppCompatActivity {
 
         updateButton.setOnClickListener(v -> updateUsername());
         logoutButton.setOnClickListener(v -> logout());
+        Button exitButton = findViewById(R.id.exitButton);
+        exitButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
+
+
+
     }
 
     private void updateUsername() {
