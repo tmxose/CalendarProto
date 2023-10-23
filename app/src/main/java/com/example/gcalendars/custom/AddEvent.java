@@ -8,9 +8,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gcalendars.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AddEvent extends AppCompatActivity {
 
@@ -27,7 +30,16 @@ public class AddEvent extends AppCompatActivity {
     private DatePickerDialog datePickerDialog;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String selectedDate;
-    String calendarName = "CustomCalendar";
+
+    private final String calendarName = "CustomCalendar";
+
+    // Firebase 인증을 통해 현재 로그인한 사용자의 UID를 가져옵니다.
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    String userUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
+
+    // Firestore에 컬렉션을 만듭니다.
+    String collectionName = userUid + "_" + calendarName; // 사용자 UID와 캘린더 이름을 조합하여 컬렉션 이름 생성
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +93,7 @@ public class AddEvent extends AppCompatActivity {
 
         if (!eventTitle.isEmpty() && !eventDate.isEmpty()) {
             Map<String, Object> event = new HashMap<>();
-            event.put("privacy",eventPrivacy);
+            event.put("privacy", eventPrivacy);
             event.put("date", eventDate);
             event.put("title", eventTitle);
 
@@ -91,7 +103,7 @@ public class AddEvent extends AppCompatActivity {
             event.put("content", contentList);
 
             // Firebase Firestore에 일정 정보 업로드
-            db.collection(calendarName).add(event)
+            db.collection(collectionName).add(event)
                     .addOnSuccessListener(documentReference -> {
                         Toast.makeText(getApplicationContext(), "일정이 추가되었습니다.", Toast.LENGTH_SHORT).show();
                         finish();
@@ -101,6 +113,7 @@ public class AddEvent extends AppCompatActivity {
             Toast.makeText(this, "일정 제목과 날짜를 입력해 주세요.", Toast.LENGTH_SHORT).show();
         }
     }
+
     private String getPrivacySelection(RadioGroup privacyRadioGroup) {
         int selectedId = privacyRadioGroup.getCheckedRadioButtonId();
         if (selectedId == R.id.radioPublic) {
