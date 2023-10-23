@@ -32,9 +32,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     private final String collectionName = "CustomCalendar";
 
-    // Firebase 인증을 통해 현재 로그인한 사용자의 UID를 가져옵니다.
-
-
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate;
@@ -77,8 +74,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
             editDialog.setOnEventUpdatedListener(this::updateEvent);
             editDialog.show();
         });
-
-
     }
 
     // 이벤트를 업데이트하는 메서드
@@ -185,9 +180,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            eventId = document.getId(); // 이벤트 ID 가져오기
                             title = document.getString("title"); // 이벤트 제목 가져오기
-                            content = document.getString("content"); // 이벤트 내용 가져오기
                             privacy = document.getString("privacy"); // 이벤트 프라이버시 가져오기
                             strDate = document.getString("date");
 

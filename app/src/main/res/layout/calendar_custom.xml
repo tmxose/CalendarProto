@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:background="#F5F2FF"
         android:gravity="center|top"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="?attr/actionBarSize">
 
         <!-- 그룹캘린더  -->
         <FrameLayout

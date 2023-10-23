@@ -29,7 +29,6 @@ public class AddEvent extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String selectedDate;
 
-    // Firebase 인증을 통해 현재 로그인한 사용자의 UID를 가져옵니다.
 
 
     @Override
