@@ -9,7 +9,6 @@ import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.gcalendars.MainActivity;
 import com.example.gcalendars.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(RegisterActivity.this, "이메일 인증 이메일이 전송되었습니다.", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                             finish();
                         } else {
                             Toast.makeText(RegisterActivity.this, "이메일 인증 이메일 전송 실패", Toast.LENGTH_SHORT).show();
