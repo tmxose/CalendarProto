@@ -12,8 +12,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gcalendars.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class AddEvent extends AppCompatActivity {
 
@@ -32,17 +29,7 @@ public class AddEvent extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String selectedDate;
 
-    private final String calendarName = "CustomCalendar";
-
     // Firebase 인증을 통해 현재 로그인한 사용자의 UID를 가져옵니다.
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseUser user = auth.getCurrentUser();
-
-    // 사용자 이름 가져오기
-    String userName = Objects.requireNonNull(user).getDisplayName();
-
-    // 컬렉션 이름 설정
-    String collectionName = userName + "_" + calendarName;
 
 
     @Override
@@ -107,6 +94,7 @@ public class AddEvent extends AppCompatActivity {
             event.put("content", contentList);
 
             // Firebase Firestore에 일정 정보 업로드
+            String collectionName = "CustomCalendar";
             db.collection(collectionName).add(event)
                     .addOnSuccessListener(documentReference -> {
                         Toast.makeText(getApplicationContext(), "일정이 추가되었습니다.", Toast.LENGTH_SHORT).show();

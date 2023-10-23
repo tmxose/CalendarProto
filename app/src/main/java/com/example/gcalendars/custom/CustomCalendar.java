@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gcalendars.R;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -29,21 +27,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
 
-    private final String calendarName = "CustomCalendar";
+    private final String collectionName = "CustomCalendar";
 
     // Firebase 인증을 통해 현재 로그인한 사용자의 UID를 가져옵니다.
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseUser user = auth.getCurrentUser();
-
-    // 사용자 이름 가져오기
-    String userName = Objects.requireNonNull(user).getDisplayName();
-
-    // 컬렉션 이름 설정
-    String collectionName = userName + "_" + calendarName;
 
 
     private TextView monthYearText;
