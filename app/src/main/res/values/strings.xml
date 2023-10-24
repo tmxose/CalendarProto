@@ -44,5 +44,8 @@
     <string name="extra">수정</string>
     <string name="logout">로그아웃</string>
     <string name="toMain">메인으로</string>
+    <string name="edit">수정</string>
+    <string name="addEvent">일정추가</string>
+    <string name="deleteEvent">일정삭제</string>
 
 </resources>

@@ -35,7 +35,8 @@ android {
 dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.drawerlayout:drawerlayout:1.2.0")
+    implementation("androidx.drawerlayout:drawerlayout:1.2.0")  // drawerlayout
+    implementation("androidx.recyclerview:recyclerview:1.3.2") // recyclerview
     implementation("com.google.android.material:material:1.10.0")
     implementation("com.google.firebase:firebase-firestore:24.9.0")
     implementation("com.google.firebase:firebase-database:20.3.0")
@@ -45,5 +46,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation(platform("com.google.firebase:firebase-bom:32.3.0"))
     implementation("com.google.firebase:firebase-analytics")
+
 
 }

@@ -9,8 +9,7 @@
         android:layout_height="wrap_content"
         android:background="#F5F2FF"
         android:gravity="center|top"
-        android:orientation="vertical"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:orientation="vertical">
 
         <!-- 그룹캘린더  -->
         <FrameLayout
@@ -74,7 +73,8 @@
                     android:text="@string/nextArrow"
                     android:textColor="@color/blue"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:ignore="DuplicateSpeakableTextCheck" />
 
             </LinearLayout>
 
@@ -152,7 +152,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/calendarRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
                 android:padding="10dp" />
 
         </LinearLayout>
@@ -168,58 +168,61 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:orientation="horizontal"
+                android:gravity="center"
+                android:orientation="vertical"
                 tools:ignore="UselessParent">
 
                 <TextView
                     android:id="@+id/textDate"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:layout_weight="1"
                     android:text="@string/year_month_day" />
+
+
+                <TextView
+                    android:id="@+id/textDateTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/date_title"
+                    android:textColor="@color/black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/buttonAdd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:text="@string/add_date"
-                    android:textColor="@color/black" />
+                    android:text="@string/addEvent"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/deleteBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:background="@color/orange"
-                    android:text="@string/delete_Date"
-                    android:textColor="@color/black" />
+                    android:text="@string/deleteEvent"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/editButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/edit"
+                    tools:ignore="ButtonStyle" />
 
             </LinearLayout>
-
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/rounded_box"
-            android:orientation="horizontal"
-            android:gravity="center">
 
-            <TextView
-                android:id="@+id/textDateTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/date_title"
-                android:textColor="@color/black" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editButton"
-                android:text="@string/nextArrow" />
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>
