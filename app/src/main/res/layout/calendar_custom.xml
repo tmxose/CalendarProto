@@ -33,6 +33,7 @@
             android:layout_height="400dp"
             android:background="@drawable/rounded_box"
             android:orientation="vertical"
+            android:layout_margin="10dp"
             android:padding="10dp">
 
             <LinearLayout
