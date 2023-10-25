@@ -9,6 +9,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.example.gcalendars.R;
+
 public class EditEventDialog extends Dialog {
     private final String title;
     private final String date;
@@ -18,7 +19,7 @@ public class EditEventDialog extends Dialog {
     private EditText titleEditText;
     private EditText dateEditText;
     private EditText contentEditText;
-    private RadioButton selectedPrivacyRadioButton; // 추가된 부분
+    private RadioButton selectedPrivacyRadioButton;
 
     private OnEventUpdatedListener eventUpdatedListener;
 
@@ -40,12 +41,10 @@ public class EditEventDialog extends Dialog {
         contentEditText = findViewById(R.id.editTextEventContent);
         RadioGroup privacyRadioGroup = findViewById(R.id.privacyRadioGroup);
 
-        // Firestore에서 가져온 정보로 EditText 및 RadioGroup 초기화
         titleEditText.setText(title);
         dateEditText.setText(date);
         contentEditText.setText(content);
 
-        // privacy를 기반으로 라디오 버튼 선택 설정
         if (privacy.equals("public")) {
             privacyRadioGroup.check(R.id.radioPublic);
         } else {
@@ -61,21 +60,21 @@ public class EditEventDialog extends Dialog {
         Button cancelButton = findViewById(R.id.cancelButton);
 
         updateButton.setOnClickListener(v -> {
-            // 수정된 정보를 가져와 리스너를 통해 업데이트 이벤트 호출
             String updatedTitle = titleEditText.getText().toString();
             String updatedDate = dateEditText.getText().toString();
             String updatedContent = contentEditText.getText().toString();
-            String updatedPrivacy = getPrivacySelection(selectedPrivacyRadioButton); // 수정된 부분
+            String updatedPrivacy = getPrivacySelection(selectedPrivacyRadioButton);
 
             if (eventUpdatedListener != null) {
                 eventUpdatedListener.onEventUpdated(updatedTitle, updatedDate, updatedContent, updatedPrivacy);
             }
 
-            dismiss(); // 다이얼로그 닫기
+            dismiss();
         });
 
-        cancelButton.setOnClickListener(v -> dismiss()); // 다이얼로그 닫기
+        cancelButton.setOnClickListener(v -> dismiss());
     }
+
     public void setOnEventUpdatedListener(OnEventUpdatedListener listener) {
         this.eventUpdatedListener = listener;
     }
@@ -83,6 +82,7 @@ public class EditEventDialog extends Dialog {
     public interface OnEventUpdatedListener {
         void onEventUpdated(String title, String date, String content, String privacy);
     }
+
     private String getPrivacySelection(RadioButton radioButton) {
         int selectedId = radioButton.getId();
         if (selectedId == R.id.radioPublic) {
