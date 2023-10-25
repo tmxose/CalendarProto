@@ -38,7 +38,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     private TextView dateTextView; // 추가된 TextView
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private String eventId; // 이벤트 ID
     private String title; // 이벤트 제목
     private String strDate; // 이벤트 날짜
     private String content; // 이벤트 내용
@@ -51,7 +50,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         initWidgets();
         selectedDate = LocalDate.now();
         setMonthView();
-
         // "일정 추가" 버튼 클릭 이벤트 처리
         Button addButton = findViewById(R.id.buttonAdd);
 
@@ -69,7 +67,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         // 버튼 클릭 이벤트에서 다이얼로그를 표시
         Button editButton = findViewById(R.id.editButton);
         editButton.setOnClickListener(v -> {
-            EditEventDialog editDialog = new EditEventDialog(this, eventId, title, strDate, content, privacy);
+            EditEventDialog editDialog = new EditEventDialog(this, title, strDate, content, privacy);
             // 이벤트가 업데이트되면 여기에서 Firestore에 업데이트하는 로직을 수행
             editDialog.setOnEventUpdatedListener(this::updateEvent);
             editDialog.show();
@@ -77,8 +75,8 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
     // 이벤트를 업데이트하는 메서드
-    private void updateEvent(String eventId, String updatedTitle, String updatedDate, String updatedContent, String updatedPrivacy) {
-        DocumentReference eventRef = db.collection(collectionName).document(eventId);
+    private void updateEvent(String updatedTitle, String updatedDate, String updatedContent, String updatedPrivacy) {
+        DocumentReference eventRef = db.collection(collectionName).document();
         Map<String, Object> data = new HashMap<>();
         data.put("title", updatedTitle);
         data.put("date", updatedDate);
@@ -180,14 +178,17 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            title = document.getString("title"); // 이벤트 제목 가져오기
-                            privacy = document.getString("privacy"); // 이벤트 프라이버시 가져오기
-                            strDate = document.getString("date");
+                            title = document.getString("title");        // 이벤트 제목 가져오기
+                            privacy = document.getString("privacy");    // 이벤트 프라이버시 가져오기
+                            strDate = document.getString("date");       // 이벤트 날짜 가져오기
+                            content = document.getString("content");    //이벤트 내용 가져오기
 
                             if (title != null && !title.isEmpty()) {
                                 // 해당 날짜에 일정이 있는 경우 텍스트 뷰에 표시
                                 TextView dateTitle = findViewById(R.id.textDateTitle);
                                 dateTitle.setText(title);
+                                TextView dateContent = findViewById(R.id.textContent);
+                                dateContent.setText(content);
                                 return; // 일치하는 첫 번째 문서를 찾았으므로 종료
                             }
                         }

@@ -10,7 +10,6 @@ import android.widget.RadioGroup;
 
 import com.example.gcalendars.R;
 public class EditEventDialog extends Dialog {
-    private final String eventId;
     private final String title;
     private final String date;
     private final String content;
@@ -24,9 +23,8 @@ public class EditEventDialog extends Dialog {
 
     private OnEventUpdatedListener eventUpdatedListener;
 
-    public EditEventDialog(Context context, String eventId, String title, String date, String content, String privacy) {
+    public EditEventDialog(Context context, String title, String date, String content, String privacy) {
         super(context);
-        this.eventId = eventId;
         this.title = title;
         this.date = date;
         this.content = content;
@@ -47,9 +45,6 @@ public class EditEventDialog extends Dialog {
         titleEditText.setText(title);
         dateEditText.setText(date);
         contentEditText.setText(content);
-
-        // 문자열 내의 개행 문자를 \n으로 변환하여 contentEditText에 설정
-        contentEditText.setText(content.replace("\\n", "\n"));
 
         // privacy를 기반으로 라디오 버튼 선택 설정
         if (privacy.equals("public")) {
@@ -74,7 +69,7 @@ public class EditEventDialog extends Dialog {
             String updatedPrivacy = getPrivacySelection(selectedPrivacyRadioButton); // 수정된 부분
 
             if (eventUpdatedListener != null) {
-                eventUpdatedListener.onEventUpdated(eventId, updatedTitle, updatedDate, updatedContent, updatedPrivacy);
+                eventUpdatedListener.onEventUpdated(updatedTitle, updatedDate, updatedContent, updatedPrivacy);
             }
 
             dismiss(); // 다이얼로그 닫기
@@ -87,7 +82,7 @@ public class EditEventDialog extends Dialog {
     }
 
     public interface OnEventUpdatedListener {
-        void onEventUpdated(String eventId, String title, String date, String content, String privacy);
+        void onEventUpdated(String title, String date, String content, String privacy);
     }
     private String getPrivacySelection(RadioButton radioButton) {
         int selectedId = radioButton.getId();
