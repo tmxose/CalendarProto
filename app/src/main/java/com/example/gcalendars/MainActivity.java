@@ -11,7 +11,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.gcalendars.custom.CustomCalendar;
 import com.google.android.material.navigation.NavigationView;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // 사용자 정의 아이콘을 클릭했을 때의 동작
-            // 여기에 사용자 정의 아이콘을 클릭했을 때 수행할 동작을 추가
             drawerLayout.openDrawer(navigationView, true); // 사이드바 열기
             return true;
         } else if (id == R.id.menu_profile_settings) {
