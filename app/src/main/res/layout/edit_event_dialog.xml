@@ -10,16 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/radioPublic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/privacyPublic"
+            android:layout_marginEnd="20dp"
             android:checked="true"
-            android:layout_marginEnd="20dp" />
+            android:text="@string/privacyPublic" />
 
         <RadioButton
             android:id="@+id/radioPrivate"
@@ -33,8 +33,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="@string/dates_info"
-        android:inputType="text"
         android:importantForAutofill="no"
+        android:inputType="text"
         tools:ignore="TextFields,VisualLintTextFieldSize" />
 
     <EditText
@@ -42,18 +42,20 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="@string/date_title"
-        android:inputType="text"
         android:importantForAutofill="no"
+        android:inputType="text"
         tools:ignore="VisualLintTextFieldSize" />
 
     <EditText
         android:id="@+id/editTextEventContent"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
+        android:gravity="top"
         android:hint="@string/date_contents"
-        android:autofillHints="no"
-        android:inputType="text"
-        tools:ignore="VisualLintTextFieldSize" />
+        android:inputType="textMultiLine"
+        android:lines="4"
+        android:scrollbars="vertical"
+        android:importantForAutofill="no" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -64,8 +66,8 @@
             android:id="@+id/updateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/update"
             android:layout_marginEnd="10dp"
+            android:text="@string/update"
             android:textSize="16sp"
             tools:ignore="ButtonStyle" />
 

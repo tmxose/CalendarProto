@@ -3,6 +3,7 @@ package com.example.gcalendars.custom;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -13,7 +14,7 @@ import com.example.gcalendars.R;
 public class EditEventDialog extends Dialog {
     private final String title;
     private final String date;
-    private final String content;
+    private final String[] content;
     private String privacy;
 
     private EditText titleEditText;
@@ -23,7 +24,7 @@ public class EditEventDialog extends Dialog {
 
     private OnEventUpdatedListener eventUpdatedListener;
 
-    public EditEventDialog(Context context, String title, String date, String content, String privacy) {
+    public EditEventDialog(Context context, String title, String date, String[] content, String privacy) {
         super(context);
         this.title = title;
         this.date = date;
@@ -43,7 +44,7 @@ public class EditEventDialog extends Dialog {
 
         titleEditText.setText(title);
         dateEditText.setText(date);
-        contentEditText.setText(content);
+        contentEditText.setText(TextUtils.join("\n", content));
 
         if (privacy.equals("public")) {
             privacyRadioGroup.check(R.id.radioPublic);
@@ -59,10 +60,12 @@ public class EditEventDialog extends Dialog {
         Button updateButton = findViewById(R.id.updateButton);
         Button cancelButton = findViewById(R.id.cancelButton);
 
+        cancelButton.setOnClickListener(v -> dismiss());
+
         updateButton.setOnClickListener(v -> {
             String updatedTitle = titleEditText.getText().toString();
             String updatedDate = dateEditText.getText().toString();
-            String updatedContent = contentEditText.getText().toString();
+            String[] updatedContent = contentEditText.getText().toString().split("\n");
             String updatedPrivacy = getPrivacySelection(selectedPrivacyRadioButton);
 
             if (eventUpdatedListener != null) {
@@ -71,8 +74,6 @@ public class EditEventDialog extends Dialog {
 
             dismiss();
         });
-
-        cancelButton.setOnClickListener(v -> dismiss());
     }
 
     public void setOnEventUpdatedListener(OnEventUpdatedListener listener) {
@@ -80,7 +81,7 @@ public class EditEventDialog extends Dialog {
     }
 
     public interface OnEventUpdatedListener {
-        void onEventUpdated(String title, String date, String content, String privacy);
+        void onEventUpdated(String title, String date, String[] content, String privacy);
     }
 
     private String getPrivacySelection(RadioButton radioButton) {
