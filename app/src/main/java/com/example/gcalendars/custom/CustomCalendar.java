@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
 
@@ -173,7 +174,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                             title = document.getString("title");
                             privacy = document.getString("privacy");
                             strDate = document.getString("date");
-                            content = document.getString("content");
+                            content = Objects.requireNonNull(document.get("content")).toString();
 
                             if (title != null && !title.isEmpty()) {
                                 runOnUiThread(() -> {
