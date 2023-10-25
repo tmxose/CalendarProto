@@ -112,24 +112,17 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         YearMonth yearMonth = YearMonth.from(date);
         int daysInMonth = yearMonth.lengthOfMonth();
         LocalDate firstOfMonth = date.withDayOfMonth(1);
-        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
+        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue(); // 1부터 7까지 (월요일부터 일요일)
 
-        boolean skipped = false; // 0번째 줄을 생략하기 위한 플래그
+        // 0번째 칸부터 배열 시작하도록 수정
+        dayOfWeek--; // dayOfWeek를 0부터 6까지로 변경
 
-        for (int i = 1; i <= 42; i++) {
-            if (i <= dayOfWeek) {
-                daysInMonthArray.add(""); // 이전 달의 빈 공간
-                skipped = true;
-            } else if (i > daysInMonth + dayOfWeek) {
-                daysInMonthArray.add(""); // 다음 달의 빈 공간
+        for (int i = 0; i < 42; i++) { // 0부터 41까지
+            if (i < dayOfWeek || i >= dayOfWeek + daysInMonth) {
+                daysInMonthArray.add(""); // 이전 달과 다음 달의 빈 공간
             } else {
-                int dayOfMonth = i - dayOfWeek; // 날짜를 채웁니다.
+                int dayOfMonth = i - dayOfWeek + 1; // 날짜를 채웁니다.
                 daysInMonthArray.add(String.valueOf(dayOfMonth));
-            }
-
-            // 0번째 줄이 모두 공백인 경우 다음 줄을 표시하기 위해 플래그를 사용
-            if (skipped && !daysInMonthArray.get(i - 1).isEmpty()) {
-                skipped = false; // 플래그를 리셋
             }
         }
 
@@ -195,6 +188,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                         // 해당 날짜에 일정이 없는 경우 처리
                         TextView dateTitle = findViewById(R.id.textDateTitle);
                         dateTitle.setText("일정 없음");
+
+                        TextView dateContent = findViewById(R.id.textContent);
+                        dateContent.setText("내용 없음");
                     } else {
                         // 오류 처리 (예: Firebase 연결 오류)
                         Toast.makeText(CustomCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show();

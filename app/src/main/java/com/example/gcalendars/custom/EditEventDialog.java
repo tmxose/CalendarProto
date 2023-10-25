@@ -20,7 +20,6 @@ public class EditEventDialog extends Dialog {
     private EditText contentEditText;
     private RadioButton selectedPrivacyRadioButton; // 추가된 부분
 
-
     private OnEventUpdatedListener eventUpdatedListener;
 
     public EditEventDialog(Context context, String title, String date, String content, String privacy) {
