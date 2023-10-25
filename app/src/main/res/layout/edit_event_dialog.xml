@@ -34,8 +34,8 @@
         android:layout_height="48dp"
         android:hint="@string/dates_info"
         android:inputType="text"
-        tools:ignore="TextFields,VisualLintTextFieldSize"
-        android:importantForAutofill="no" />
+        android:importantForAutofill="no"
+        tools:ignore="TextFields" />
 
     <EditText
         android:id="@+id/editTextEventTitle"
@@ -43,8 +43,7 @@
         android:layout_height="48dp"
         android:hint="@string/date_title"
         android:inputType="text"
-        android:importantForAutofill="no"
-        tools:ignore="VisualLintTextFieldSize" />
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/editTextEventContent"
@@ -52,8 +51,6 @@
         android:layout_height="200dp"
         android:hint="@string/date_contents"
         android:autofillHints="no"
-        android:layout_gravity="left|top"
-        tools:ignore="RtlHardcoded,VisualLintTextFieldSize"
         android:inputType="text"/>
 
     <LinearLayout
