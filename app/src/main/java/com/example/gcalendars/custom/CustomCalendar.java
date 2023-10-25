@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -50,22 +51,21 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         initWidgets();
         selectedDate = LocalDate.now();
         setMonthView();
-        // "일정 추가" 버튼 클릭 이벤트 처리
-        Button addButton = findViewById(R.id.buttonAdd);
 
+        Button addButton = findViewById(R.id.buttonAdd);
+        Button deleteButton = findViewById(R.id.deleteBtn);
+        Button editButton = findViewById(R.id.editButton);
+
+        // "일정 추가" 버튼 클릭 이벤트 처리
         addButton.setOnClickListener(v -> {
             // 선택한 날짜를 인텐트에 추가
             Intent intent = new Intent(CustomCalendar.this, AddEvent.class);
             intent.putExtra("selectedDate", selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd")));
             startActivity(intent); // AddEvent 액티비티 시작
         });
-
         // "일정 삭제" 버튼 클릭 이벤트 처리
-        Button deleteButton = findViewById(R.id.deleteBtn);
         deleteButton.setOnClickListener(v -> deleteEventForDate(selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd"))));
-
         // 버튼 클릭 이벤트에서 다이얼로그를 표시
-        Button editButton = findViewById(R.id.editButton);
         editButton.setOnClickListener(v -> {
             EditEventDialog editDialog = new EditEventDialog(this, title, strDate, content, privacy);
             // 이벤트가 업데이트되면 여기에서 Firestore에 업데이트하는 로직을 수행
@@ -115,7 +115,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue(); // 1부터 7까지 (월요일부터 일요일)
 
         // 0번째 칸부터 배열 시작하도록 수정
-        dayOfWeek--; // dayOfWeek를 0부터 6까지로 변경
+        dayOfWeek %= 7; // dayOfWeek를 0부터 6까지로 변경
 
         for (int i = 0; i < 42; i++) { // 0부터 41까지
             if (i < dayOfWeek || i >= dayOfWeek + daysInMonth) {
@@ -165,7 +165,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     // Firebase에서 해당 날짜의 일정을 가져와 표시하는 메서드
     private void displayEventForDate(final String date) {
-        // date 필드와 일치하는 문서를 쿼리합니다.
         db.collection(collectionName).whereEqualTo("date", date)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -177,21 +176,21 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                             content = document.getString("content");
 
                             if (title != null && !title.isEmpty()) {
-                                // UI 업데이트는 메인 스레드에서 수행되어야 함
                                 runOnUiThread(() -> {
                                     TextView dateTitle = findViewById(R.id.textDateTitle);
                                     dateTitle.setText(title);
                                     TextView dateContent = findViewById(R.id.textContent);
                                     if (content != null) {
-                                        dateContent.setText(content);
+                                        // HTML 줄 바꿈 태그로 개행 문자 처리
+                                        content = content.replace("\n", "<br>");
+                                        dateContent.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY));
                                     } else {
                                         dateContent.setText("내용 없음");
                                     }
                                 });
-                                return; // 일치하는 첫 번째 문서를 찾았으므로 종료
+                                return;
                             }
                         }
-                        // 해당 날짜에 일정이 없는 경우 처리
                         runOnUiThread(() -> {
                             TextView dateTitle = findViewById(R.id.textDateTitle);
                             dateTitle.setText("일정 없음");
@@ -199,7 +198,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                             dateContent.setText("내용 없음");
                         });
                     } else {
-                        // 오류 처리 (예: Firebase 연결 오류)
                         runOnUiThread(() -> Toast.makeText(CustomCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show());
                     }
                 });
