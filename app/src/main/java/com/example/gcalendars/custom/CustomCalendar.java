@@ -115,10 +115,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         LocalDate firstOfMonth = date.withDayOfMonth(1);
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue(); // 1부터 7까지 (월요일부터 일요일)
 
-        // 0번째 칸부터 배열 시작하도록 수정
-        dayOfWeek %= 7; // dayOfWeek를 0부터 6까지로 변경
-
-        for (int i = 0; i < 42; i++) { // 0부터 41까지
+        for (int i = 1; i <= 42; i++) { // 0부터 41까지
             if (i < dayOfWeek || i >= dayOfWeek + daysInMonth) {
                 daysInMonthArray.add(""); // 이전 달과 다음 달의 빈 공간
             } else {
