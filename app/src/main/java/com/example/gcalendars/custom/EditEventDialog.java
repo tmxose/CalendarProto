@@ -46,6 +46,7 @@ public class EditEventDialog extends Dialog {
         // Firestore에서 가져온 정보로 EditText 및 RadioGroup 초기화
         titleEditText.setText(title);
         dateEditText.setText(date);
+        contentEditText.setText(content);
 
         // 문자열 내의 개행 문자를 \n으로 변환하여 contentEditText에 설정
         contentEditText.setText(content.replace("\\n", "\n"));
