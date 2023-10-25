@@ -171,32 +171,40 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            title = document.getString("title");        // 이벤트 제목 가져오기
-                            privacy = document.getString("privacy");    // 이벤트 프라이버시 가져오기
-                            strDate = document.getString("date");       // 이벤트 날짜 가져오기
-                            content = document.getString("content");    //이벤트 내용 가져오기
+                            title = document.getString("title");
+                            privacy = document.getString("privacy");
+                            strDate = document.getString("date");
+                            content = document.getString("content");
 
                             if (title != null && !title.isEmpty()) {
-                                // 해당 날짜에 일정이 있는 경우 텍스트 뷰에 표시
-                                TextView dateTitle = findViewById(R.id.textDateTitle);
-                                dateTitle.setText(title);
-                                TextView dateContent = findViewById(R.id.textContent);
-                                dateContent.setText(content);
+                                // UI 업데이트는 메인 스레드에서 수행되어야 함
+                                runOnUiThread(() -> {
+                                    TextView dateTitle = findViewById(R.id.textDateTitle);
+                                    dateTitle.setText(title);
+                                    TextView dateContent = findViewById(R.id.textContent);
+                                    if (content != null) {
+                                        dateContent.setText(content);
+                                    } else {
+                                        dateContent.setText("내용 없음");
+                                    }
+                                });
                                 return; // 일치하는 첫 번째 문서를 찾았으므로 종료
                             }
                         }
                         // 해당 날짜에 일정이 없는 경우 처리
-                        TextView dateTitle = findViewById(R.id.textDateTitle);
-                        dateTitle.setText("일정 없음");
-
-                        TextView dateContent = findViewById(R.id.textContent);
-                        dateContent.setText("내용 없음");
+                        runOnUiThread(() -> {
+                            TextView dateTitle = findViewById(R.id.textDateTitle);
+                            dateTitle.setText("일정 없음");
+                            TextView dateContent = findViewById(R.id.textContent);
+                            dateContent.setText("내용 없음");
+                        });
                     } else {
                         // 오류 처리 (예: Firebase 연결 오류)
-                        Toast.makeText(CustomCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show();
+                        runOnUiThread(() -> Toast.makeText(CustomCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show());
                     }
                 });
     }
+
 
     // 선택한 날짜의 일정 삭제하는 메서드
     private void deleteEventForDate(String date) {
