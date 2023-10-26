@@ -80,7 +80,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         });
     }
 
-
     private void initWidgets() {
         // XML 레이아웃에서 위젯을 초기화하는 메서드.
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
@@ -239,7 +238,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         int id = item.getItemId();
         if (id == R.id.menu_profile_settings) {
             // "개인정보 설정" 메뉴를 눌렀을 때의 동작
-            startActivity(new Intent(this, personalSettings.class)); // 개인정보 설정 화면으로 이동
+            Intent intent = new Intent(this, personalSettings.class);
+            intent.putExtra("calendarId", collectionName); // 캘린더 컬렉션 이름을 전달
+            startActivity(intent); // AddEvent 액티비티 시작 // 개인정보 설정 화면으로 이동
             return true;
         } else if (id == R.id.move_to_main) {
             // "개인정보 설정" 메뉴를 눌렀을 때의 동작

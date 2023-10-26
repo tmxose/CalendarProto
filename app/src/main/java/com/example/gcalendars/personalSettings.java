@@ -16,7 +16,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class personalSettings extends AppCompatActivity {
     private TextView usernameTextView;
-
+    private String collectionName; // 캘린더 컬렉션 이름
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
@@ -25,6 +25,7 @@ public class personalSettings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_personal);
 
+        collectionName = getIntent().getStringExtra("calendarId");
         usernameTextView = findViewById(R.id.usernameTextView);
         TextView emailEditText = findViewById(R.id.emailEditText);
         Button updateButton = findViewById(R.id.updateButton);
@@ -43,7 +44,11 @@ public class personalSettings extends AppCompatActivity {
         Button exitButton = findViewById(R.id.exitButton);
         exitButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
         Button exitCustomButton = findViewById(R.id.exitButton_to_Custom);
-        exitCustomButton.setOnClickListener(v -> startActivity(new Intent(this, CustomCalendar.class)));
+        exitCustomButton.setOnClickListener(v -> {
+            Intent intent = new Intent(personalSettings.this, CustomCalendar.class);
+            intent.putExtra("calendarId", collectionName); // 캘린더 컬렉션 이름을 전달
+            startActivity(intent); // AddEvent 액티비티 시작
+        });
 
     }
 
