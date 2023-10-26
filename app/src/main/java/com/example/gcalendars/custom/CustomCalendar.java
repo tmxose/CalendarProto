@@ -2,6 +2,7 @@ package com.example.gcalendars.custom;
 
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
@@ -42,9 +43,10 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private String title; // 이벤트 제목
-    private String strDate; // 이벤트 날짜
     private List<String> content; // 이벤트 내용
     private String privacy; // 이벤트 프라이버시
+    private LocalDate selectedStartDate; // 시작 날짜
+    private LocalDate selectedEndDate;   // 종료 날짜
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,26 +58,32 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         collectionName = getIntent().getStringExtra("calendarId");
         setTitle(getIntent().getStringExtra("calendarName"));
 
-        selectedDate = LocalDate.now();
+        selectedStartDate = LocalDate.now(); // 현재 날짜를 시작 날짜로 초기화
+        selectedEndDate = LocalDate.now();   // 현재 날짜를 종료 날짜로 초기화
+
         setMonthView();
 
         Button addButton = findViewById(R.id.buttonAdd);
         Button deleteButton = findViewById(R.id.deleteBtn);
         Button editButton = findViewById(R.id.editButton);
+        // onCreate 메서드 내에서 변수로 시작일과 종료일 문자열 선언
+        String formattedStartDate = selectedStartDate.format(DateTimeFormatter.ofPattern("yyyy MM dd"));
+        String formattedEndDate = selectedEndDate.format(DateTimeFormatter.ofPattern("yyyy MM dd"));
 
         // "일정 추가" 버튼 클릭 이벤트 처리
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(CustomCalendar.this, AddEvent.class);
-            intent.putExtra("selectedDate", selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd")));
+            intent.putExtra("selectedStartDate", formattedStartDate);
+            intent.putExtra("selectedEndDate", formattedEndDate);
             intent.putExtra("collectionName", collectionName); // 캘린더 컬렉션 이름을 전달
             startActivity(intent); // AddEvent 액티비티 시작
         });
         // "일정 삭제" 버튼 클릭 이벤트 처리
-        deleteButton.setOnClickListener(v -> deleteEventForDate(selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd"))));
+        deleteButton.setOnClickListener(v -> deleteEventsForDateRange(formattedStartDate,formattedEndDate));
 
         // 버튼 클릭 이벤트에서 다이얼로그를 표시
         editButton.setOnClickListener(v -> {
-            EditEventDialog editDialog = new EditEventDialog(this, title, strDate, content, privacy,collectionName);
+            EditEventDialog editDialog = new EditEventDialog(this, title, formattedStartDate, formattedEndDate, content, privacy, collectionName);
             editDialog.show();
         });
     }
@@ -121,7 +129,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         return daysInMonthArray;
     }
 
-
     // 월과 년도를 문자열로 변환
     private String monthYearFromDate(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
@@ -140,31 +147,39 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         setMonthView();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onItemClick(int position, String dayText) {
         // 캘린더의 날짜를 클릭했을 때 호출되는 메서드입니다.
         if (!dayText.equals("")) {
             int dayOfMonth = Integer.parseInt(dayText);
-            selectedDate = selectedDate.withDayOfMonth(dayOfMonth);
+            if (selectedStartDate == null) {
+                selectedStartDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
+            } else {
+                selectedEndDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
+            }
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
-            String formattedDate = selectedDate.format(formatter);
-            dateTextView.setText(formattedDate);
-            // 선택한 날짜에 대한 이벤트를 가져와 표시
-            displayEventForDate(formattedDate);
+            String formattedStartDate = selectedStartDate.format(formatter);
+            String formattedEndDate = selectedEndDate.format(formatter);
+            dateTextView.setText(formattedStartDate + " - " + formattedEndDate);
+            // 선택한 날짜 범위에 대한 이벤트를 가져와 표시
+            displayEventsForDateRange(formattedStartDate, formattedEndDate);
         }
     }
 
-    // Firebase에서 해당 날짜의 일정을 가져와 표시하는 메서드
-    private void displayEventForDate(final String date) {
-        db.collection(collectionName).whereEqualTo("date", date)
+    private void displayEventsForDateRange(final String startDate, final String endDate) {
+        String dateRange = startDate + " - " + endDate; // 시작일과 종료일을 합친 문자열 생성
+
+        db.collection(collectionName)
+                .whereGreaterThanOrEqualTo("date", startDate)
+                .whereLessThanOrEqualTo("date", endDate)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             title = document.getString("title");
                             privacy = document.getString("privacy");
-                            strDate = document.getString("date");
 
                             Object contentObj = document.get("content");
 
@@ -191,6 +206,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                                     } else {
                                         dateContent.setText("내용 없음");
                                     }
+                                    dateTextView.setText(dateRange); // 날짜 범위 업데이트
                                 });
                                 return;
                             }
@@ -208,25 +224,27 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
 
-    // 선택한 날짜의 일정 삭제하는 메서드
-    private void deleteEventForDate(String date) {
-        db.collection(collectionName).whereEqualTo("date", date)
+
+    // 선택한 날짜 범위에 해당하는 일정 삭제하는 메서드
+    private void deleteEventsForDateRange(String startDate, String endDate) {
+        db.collection(collectionName)
+                .whereGreaterThanOrEqualTo("date", startDate)
+                .whereLessThanOrEqualTo("date", endDate)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             document.getReference().delete();
-                            Toast.makeText(CustomCalendar.this, "일정을 삭제 했습니다.", Toast.LENGTH_SHORT).show();
                         }
+                        Toast.makeText(CustomCalendar.this, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d(TAG, "Error getting documents: ", task.getException());
+                        Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                     }
-                }).addOnFailureListener(e -> {
-                    // 삭제 오류 처리
-                    Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 });
-
     }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.nav_menu, menu);

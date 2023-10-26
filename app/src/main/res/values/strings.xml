@@ -51,5 +51,7 @@
     <string name="create">생성</string>
     <string name="mainpage">메인 화면</string>
     <string name="toCalendar">캘린더로 이동</string>
+    <string name="startDateSelect">시작 날짜 선택</string>
+    <string name="endDateSelect">종료 날짜 선택</string>
 
 </resources>

@@ -29,13 +29,29 @@
     </RadioGroup>
 
     <EditText
-        android:id="@+id/editTextEventDate"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="@string/dates_info"
+        android:id="@+id/editTextEventStartDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:hint="@string/startDateSelect"
         android:importantForAutofill="no"
-        android:inputType="text"
-        tools:ignore="TextFields,VisualLintTextFieldSize" />
+        android:minHeight="48dp"
+        android:padding="8dp"
+        tools:ignore="TextFields" />
+
+    <!-- 종료 날짜 선택을 위한 EditText -->
+    <EditText
+        android:id="@+id/editTextEventEndDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:hint="@string/endDateSelect"
+        android:importantForAutofill="no"
+        android:minHeight="48dp"
+        android:padding="8dp"
+        tools:ignore="TextFields" />
 
     <EditText
         android:id="@+id/editTextEventTitle"

@@ -36,20 +36,31 @@
                 android:text="@string/privacyPravte" />
         </RadioGroup>
 
+        <!-- 시작 날짜 선택을 위한 EditText -->
         <EditText
-            android:id="@+id/editTextEventDate"
+            android:id="@+id/editTextStartDate"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:clickable="true"
-            android:focusable="false"
-            android:hint="@string/_2023_9_1"
-            android:inputType="none"
+            android:hint="@string/startDateSelect"
+            android:importantForAutofill="no"
+            android:minHeight="48dp"
             android:padding="8dp"
-            android:layout_margin="20dp"
-            tools:ignore="TextFields"
-            android:importantForAutofill="no" />
+            tools:ignore="TextFields" />
+
+        <!-- 종료 날짜 선택을 위한 EditText -->
+        <EditText
+            android:id="@+id/editTextEndDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:hint="@string/endDateSelect"
+            android:importantForAutofill="no"
+            android:minHeight="48dp"
+            android:padding="8dp"
+            tools:ignore="TextFields" />
 
         <EditText
             android:id="@+id/editTextEventTitle"

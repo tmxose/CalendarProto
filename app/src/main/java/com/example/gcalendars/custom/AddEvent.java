@@ -1,7 +1,6 @@
 package com.example.gcalendars.custom;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
@@ -22,73 +21,92 @@ import java.util.Map;
 
 public class AddEvent extends AppCompatActivity {
 
-    private EditText eventDateEditText;
+    private EditText eventStartDateEditText; // 시작 날짜를 입력할 EditText
+    private EditText eventEndDateEditText; // 종료 날짜를 입력할 EditText
     private EditText eventTitleEditText;
     private EditText eventContentEditText;
-    private DatePickerDialog datePickerDialog;
+    private DatePickerDialog startDatePickerDialog;
+    private DatePickerDialog endDatePickerDialog;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    String selectedDate;
     String collectionName; // 캘린더 컬렉션 이름
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_add);
 
-        eventDateEditText = findViewById(R.id.editTextEventDate);
+        RadioGroup privacyRadioGroup = findViewById(R.id.privacyRadioGroup);
+        eventStartDateEditText = findViewById(R.id.editTextStartDate);
+        eventEndDateEditText = findViewById(R.id.editTextEndDate);
         eventTitleEditText = findViewById(R.id.editTextEventTitle);
         eventContentEditText = findViewById(R.id.editTextEventContent);
-        RadioGroup privacyRadioGroup = findViewById(R.id.privacyRadioGroup);
 
         Button saveButton = findViewById(R.id.buttonSaveEvent);
 
         // 캘린더 아이디와 이름을 인텐트에서 받아와서 컬렉션 이름 설정
         collectionName = getIntent().getStringExtra("collectionName");
 
-        // 인텐트 받아오기
-        Intent intent = getIntent();
-        // 선택한 날짜를 받아옵니다.
-        selectedDate = intent.getStringExtra("selectedDate");
-        eventDateEditText.setText(selectedDate);
-        // 날짜 선택 버튼에 리스너 추가
-        eventDateEditText.setOnClickListener(v -> showDateDialog());
+        // 시작 날짜 선택 다이얼로그 표시
+        eventStartDateEditText.setOnClickListener(v -> showStartDateDialog());
+
+        // 종료 날짜 선택 다이얼로그 표시
+        eventEndDateEditText.setOnClickListener(v -> showEndDateDialog());
 
         // 저장 버튼에 리스너 추가
         saveButton.setOnClickListener(v -> saveEvent(privacyRadioGroup));
     }
 
-    // 날짜 선택 다이얼로그를 띄우는 함수
-    private void showDateDialog() {
+    // 시작 날짜 선택 다이얼로그 표시
+    private void showStartDateDialog() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        datePickerDialog = new DatePickerDialog(this,
+        startDatePickerDialog = new DatePickerDialog(this,
                 (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-                    selectedDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
-                    eventDateEditText.setText(selectedDate);
-                    datePickerDialog.dismiss(); // 다이얼로그를 닫습니다.
+                    String selectedStartDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
+                    eventStartDateEditText.setText(selectedStartDate);
+                    startDatePickerDialog.dismiss();
                 }, year, month, day);
-        datePickerDialog.show();
-        datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
-        datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
+        startDatePickerDialog.show();
+        startDatePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
+        startDatePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
+    }
+
+    // 종료 날짜 선택 다이얼로그 표시
+    private void showEndDateDialog() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        endDatePickerDialog = new DatePickerDialog(this,
+                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+                    String selectedEndDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
+                    eventEndDateEditText.setText(selectedEndDate);
+                    endDatePickerDialog.dismiss();
+                }, year, month, day);
+        endDatePickerDialog.show();
+        endDatePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
+        endDatePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
     }
 
     // 일정을 저장하는 함수
     private void saveEvent(RadioGroup privacyRadioGroup) {
-        String eventDate = eventDateEditText.getText().toString();
+        String eventStartDate = eventStartDateEditText.getText().toString();
+        String eventEndDate = eventEndDateEditText.getText().toString();
         String eventTitle = eventTitleEditText.getText().toString();
         String eventContent = eventContentEditText.getText().toString();
         String eventPrivacy = getPrivacySelection(privacyRadioGroup);
 
-
-        if (!eventTitle.isEmpty() && !eventDate.isEmpty()) {
+        if (!eventTitle.isEmpty() && !eventStartDate.isEmpty() && !eventEndDate.isEmpty()) {
             Map<String, Object> event = new HashMap<>();
             event.put("privacy", eventPrivacy);
-            event.put("date", eventDate);
+            event.put("startDate", eventStartDate); // 시작 날짜 저장
+            event.put("endDate", eventEndDate);     // 종료 날짜 저장
             event.put("title", eventTitle);
 
-            // 이 부분에서 줄바꿈 처리
             String[] contentLines = eventContent.split("\n");
             ArrayList<String> contentList = new ArrayList<>(Arrays.asList(contentLines));
             event.put("content", contentList);
@@ -100,7 +118,7 @@ public class AddEvent extends AppCompatActivity {
                     })
                     .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "일정 추가에 실패했습니다.", Toast.LENGTH_SHORT).show());
         } else {
-            Toast.makeText(this, "일정 제목과 날짜를 입력해 주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "일정 제목, 시작 날짜, 종료 날짜를 입력해 주세요.", Toast.LENGTH_SHORT).show();
         }
     }
 
