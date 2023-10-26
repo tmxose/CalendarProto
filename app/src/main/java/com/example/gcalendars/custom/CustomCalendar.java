@@ -36,6 +36,7 @@ import java.util.List;
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private String collectionName; // 캘린더 컬렉션 이름
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate = LocalDate.now();
@@ -199,16 +200,16 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     private void displayEventsForDateRange(final String startDate, final String endDate) {
         db.collection(collectionName)
-                .whereGreaterThanOrEqualTo("date", startDate)
-                .whereLessThanOrEqualTo("date", endDate)
+                .whereGreaterThanOrEqualTo("startDate", startDate)
+                .whereLessThanOrEqualTo("endDate", endDate)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             title = document.getString("title");
                             privacy = document.getString("privacy");
-                            String eventDate = document.getString("date");
 
+                            String eventDate = selectedDate.format(formatter);
                             if (isDateInRange(eventDate, startDate, endDate)) {
                                 Object contentObj = document.get("content");
 
