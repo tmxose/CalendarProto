@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.ActionBar;
 import com.example.gcalendars.custom.CustomCalendar;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,22 +24,16 @@ public class MainActivity extends AppCompatActivity {
             // CustomCalendar 액티비티로 이동
             startActivity(new Intent(MainActivity.this, CustomCalendar.class));
         });
+
         buttonAddCalendar.setOnClickListener(v ->{
-            // 다이얼로그 띄우기    
+            // 다이얼로그 띄우기
+            showAddCalendarDialog();
         });
-        // 액션바 설정
-        setupActionBar();
     }
-
-    // 액션바 설정 및 사용자 정의 아이콘 추가
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu); // 사용자 정의 아이콘 설정
-        }
+    private void showAddCalendarDialog() {
+        AddCalendarDialog addCalendarDialog = new AddCalendarDialog(this);
+        addCalendarDialog.show();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.nav_menu, menu);

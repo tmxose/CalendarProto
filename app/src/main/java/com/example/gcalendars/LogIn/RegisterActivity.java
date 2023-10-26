@@ -12,15 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.gcalendars.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText usernameEditText, passwordEditText, emailEditText;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
         Button registerButton = findViewById(R.id.registerButton);
 
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
         registerButton.setOnClickListener(v -> handleRegistration());
     }
@@ -53,8 +51,8 @@ public class RegisterActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // Firestore에 사용자 정보 저장
-                            saveUserDataToFirestore(user.getUid(), username, email);
+                            // Realtime Database에 사용자 정보 저장
+                            saveUserDataToDatabase(user.getUid(), username, email);
                             sendEmailVerification(user);
                         }
                     } else {
@@ -63,21 +61,18 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveUserDataToFirestore(String uid, String username, String email) {
-        // "users" 컬렉션에 사용자 정보 저장
-        db.collection("users")
-                .document(uid)
-                .set(getUserData(username, email))
-                .addOnSuccessListener(aVoid -> Toast.makeText(RegisterActivity.this, "사용자 정보 저장 성공", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "사용자 정보 저장 실패", Toast.LENGTH_SHORT).show());
-    }
+    private void saveUserDataToDatabase(String uid, String username, String email) {
+        // "users" 노드에 사용자 정보 저장
+        DatabaseReference userRef = databaseReference.child(uid);
+        userRef.child("username").setValue(username);
+        userRef.child("email").setValue(email);
 
-    private Map<String, Object> getUserData(String username, String email) {
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("username", username);
-        userData.put("email", email);
-
-        return userData;
+        // 예시로 두 개의 캘린더 추가
+        DatabaseReference calendarsRef = userRef.child("calendars");
+        DatabaseReference calendar1Ref = calendarsRef.push();
+        DatabaseReference calendar2Ref = calendarsRef.push();
+        calendar1Ref.child("calendarName").setValue("캘린더 이름 1");
+        calendar2Ref.child("calendarName").setValue("캘린더 이름 2");
     }
 
     private void sendEmailVerification(FirebaseUser user) {
