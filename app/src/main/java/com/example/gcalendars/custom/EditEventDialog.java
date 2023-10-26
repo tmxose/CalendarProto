@@ -27,7 +27,8 @@ public class EditEventDialog extends Dialog {
     private final List<String> content; // 이벤트 내용 (변경된 부분: List<String>으로 변경)
     private String privacy; // 이벤트 프라이버시
 
-    private final String collectionName = "CustomCalendar"; // Firestore 컬렉션 이름
+    private final String collectionName; // Firestore 컬렉션 이름
+
     private final FirebaseFirestore db = FirebaseFirestore.getInstance(); // Firestore 인스턴스
 
     private EditText titleEditText;
@@ -35,12 +36,13 @@ public class EditEventDialog extends Dialog {
     private EditText contentEditText;
     private RadioButton selectedPrivacyRadioButton;
 
-    public EditEventDialog(Context context, String title, String date, List<String> content, String privacy) {
+    public EditEventDialog(Context context, String title, String date, List<String> content, String privacy,String collectionName) {
         super(context);
         this.title = title;
         this.date = date;
         this.content = content;
         this.privacy = privacy;
+        this.collectionName = collectionName; // 콜렉션 네임 설정
     }
 
     @Override

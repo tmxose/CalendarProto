@@ -93,8 +93,6 @@ public class AddEvent extends AppCompatActivity {
             ArrayList<String> contentList = new ArrayList<>(Arrays.asList(contentLines));
             event.put("content", contentList);
 
-            // Firebase Firestore에 일정 정보 업로드
-            String collectionName = "CustomCalendar";
             db.collection(collectionName).add(event)
                     .addOnSuccessListener(documentReference -> {
                         Toast.makeText(getApplicationContext(), "일정이 추가되었습니다.", Toast.LENGTH_SHORT).show();

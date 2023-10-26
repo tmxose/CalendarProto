@@ -75,7 +75,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
         // 버튼 클릭 이벤트에서 다이얼로그를 표시
         editButton.setOnClickListener(v -> {
-            EditEventDialog editDialog = new EditEventDialog(this, title, strDate, content, privacy);
+            EditEventDialog editDialog = new EditEventDialog(this, title, strDate, content, privacy,collectionName);
             editDialog.show();
         });
     }
