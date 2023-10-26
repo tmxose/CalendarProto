@@ -34,9 +34,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
+        android:clickable="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:hint="@string/startDateSelect"
         android:importantForAutofill="no"
+        android:inputType="none"
         android:minHeight="48dp"
+        android:onClick="showStartDateDialog"
         android:padding="8dp"
         tools:ignore="TextFields" />
 
@@ -47,9 +52,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
+        android:clickable="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:hint="@string/endDateSelect"
         android:importantForAutofill="no"
+        android:inputType="none"
         android:minHeight="48dp"
+        android:onClick="showStartDateDialog"
         android:padding="8dp"
         tools:ignore="TextFields" />
 
@@ -68,10 +78,10 @@
         android:layout_height="wrap_content"
         android:gravity="top"
         android:hint="@string/date_contents"
+        android:importantForAutofill="no"
         android:inputType="textMultiLine"
         android:lines="4"
-        android:scrollbars="vertical"
-        android:importantForAutofill="no" />
+        android:scrollbars="vertical" />
 
     <LinearLayout
         android:layout_width="wrap_content"

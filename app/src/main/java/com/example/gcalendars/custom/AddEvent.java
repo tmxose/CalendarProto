@@ -25,8 +25,6 @@ public class AddEvent extends AppCompatActivity {
     private EditText eventEndDateEditText; // 종료 날짜를 입력할 EditText
     private EditText eventTitleEditText;
     private EditText eventContentEditText;
-    private DatePickerDialog startDatePickerDialog;
-    private DatePickerDialog endDatePickerDialog;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String collectionName; // 캘린더 컬렉션 이름
 
@@ -56,41 +54,48 @@ public class AddEvent extends AppCompatActivity {
         saveButton.setOnClickListener(v -> saveEvent(privacyRadioGroup));
     }
 
-    // 시작 날짜 선택 다이얼로그 표시
     private void showStartDateDialog() {
+        // 현재 날짜 정보 가져오기
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        startDatePickerDialog = new DatePickerDialog(this,
+        // 날짜 선택 다이얼로그 표시
+        DatePickerDialog startDatePickerDialog = new DatePickerDialog(this,
                 (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+                    // 선택한 날짜로 EditText 업데이트
                     String selectedStartDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
                     eventStartDateEditText.setText(selectedStartDate);
-                    startDatePickerDialog.dismiss();
                 }, year, month, day);
+
+        // 다이얼로그 표시
         startDatePickerDialog.show();
         startDatePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
         startDatePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
     }
 
-    // 종료 날짜 선택 다이얼로그 표시
     private void showEndDateDialog() {
+        // 현재 날짜 정보 가져오기
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        endDatePickerDialog = new DatePickerDialog(this,
+        // 날짜 선택 다이얼로그 표시
+        DatePickerDialog endDatePickerDialog = new DatePickerDialog(this,
                 (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+                    // 선택한 날짜로 EditText 업데이트
                     String selectedEndDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
                     eventEndDateEditText.setText(selectedEndDate);
-                    endDatePickerDialog.dismiss();
                 }, year, month, day);
+
+        // 다이얼로그 표시
         endDatePickerDialog.show();
         endDatePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
         endDatePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
     }
+
 
     // 일정을 저장하는 함수
     private void saveEvent(RadioGroup privacyRadioGroup) {

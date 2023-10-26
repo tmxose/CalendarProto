@@ -25,9 +25,9 @@
                 android:id="@+id/radioPublic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/privacyPublic"
+                android:layout_marginEnd="20dp"
                 android:checked="true"
-                android:layout_marginEnd="20dp" />
+                android:text="@string/privacyPublic" />
 
             <RadioButton
                 android:id="@+id/radioPrivate"
@@ -43,9 +43,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:hint="@string/startDateSelect"
             android:importantForAutofill="no"
+            android:inputType="none"
             android:minHeight="48dp"
+            android:onClick="showStartDateDialog"
             android:padding="8dp"
             tools:ignore="TextFields" />
 
@@ -56,9 +61,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:hint="@string/endDateSelect"
             android:importantForAutofill="no"
+            android:inputType="none"
             android:minHeight="48dp"
+            android:onClick="showStartDateDialog"
             android:padding="8dp"
             tools:ignore="TextFields" />
 
@@ -66,13 +76,13 @@
             android:id="@+id/editTextEventTitle"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:hint="@string/hint_title"
-            android:inputType="text"
-            android:maxLines="1"
-            android:padding="8dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:importantForAutofill="no" />
+            android:hint="@string/hint_title"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="8dp" />
 
         <EditText
             android:id="@+id/editTextEventContent"
@@ -81,16 +91,16 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:hint="@string/hint"
+            android:importantForAutofill="no"
             android:inputType="textMultiLine"
-            android:padding="8dp"
-            android:importantForAutofill="no" />
+            android:padding="8dp" />
 
         <Button
             android:id="@+id/buttonSaveEvent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/addDate"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:text="@string/addDate" />
 
     </LinearLayout>
 </ScrollView>

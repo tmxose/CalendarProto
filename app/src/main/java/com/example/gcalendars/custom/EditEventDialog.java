@@ -90,8 +90,10 @@ public class EditEventDialog extends Dialog {
     }
 
     private void updateEventInFirestore(String updatedTitle, String updatedStartDate, String updatedEndDate, List<String> updatedContent, String updatedPrivacy) {
-        db.collection(collectionName).whereEqualTo("title", title)
-                .whereEqualTo("date", startDate)
+        db.collection(collectionName)
+                .whereEqualTo("title", title)
+                .whereGreaterThanOrEqualTo("startDate", updatedStartDate) // 시작 날짜가 선택 날짜보다 같거나 이후
+                .whereLessThanOrEqualTo("endDate", updatedEndDate)     // 종료 날짜가 선택 날짜보다 같거나 이전
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
@@ -99,7 +101,7 @@ public class EditEventDialog extends Dialog {
                             String documentId = document.getId();
                             Map<String, Object> data = new HashMap<>();
                             data.put("title", updatedTitle);
-                            data.put("date", updatedStartDate);
+                            data.put("startDate", updatedStartDate);
                             data.put("endDate", updatedEndDate);
                             data.put("content", updatedContent);
                             data.put("privacy", updatedPrivacy);
@@ -117,4 +119,5 @@ public class EditEventDialog extends Dialog {
                 })
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "일정 업데이트 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
     }
+
 }
