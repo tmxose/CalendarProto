@@ -97,7 +97,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
     private String formatDate(LocalDate date) {
-        return date.format(DateTimeFormatter.ofPattern("yyyy MM dd"));
+        return date.format(formatter);
     }
 
     private void deleteEventsForSelectedRange() {
@@ -161,7 +161,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     // 월과 년도를 문자열로 변환
     private String monthYearFromDate(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
         return date.format(formatter);
     }
 
@@ -189,7 +188,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 selectedEndDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
             }
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
             String formattedStartDate = selectedStartDate.format(formatter);
             String formattedEndDate = selectedEndDate.format(formatter);
             dateTextView.setText(formattedStartDate + " - " + formattedEndDate);
@@ -248,9 +246,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
     private boolean isDateInRange(String date, String startDate, String endDate) {
-        LocalDate eventDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy MM dd"));
-        LocalDate rangeStartDate = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyy MM dd"));
-        LocalDate rangeEndDate = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyy MM dd"));
+        LocalDate eventDate = LocalDate.parse(date, formatter);
+        LocalDate rangeStartDate = LocalDate.parse(startDate, formatter);
+        LocalDate rangeEndDate = LocalDate.parse(endDate, formatter);
 
         return !eventDate.isBefore(rangeStartDate) && !eventDate.isAfter(rangeEndDate);
     }
