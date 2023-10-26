@@ -35,8 +35,6 @@ public class EditEventDialog extends Dialog {
     private EditText contentEditText;
     private RadioButton selectedPrivacyRadioButton;
 
-    private OnEventUpdatedListener eventUpdatedListener; // 이벤트 업데이트 리스너
-
     public EditEventDialog(Context context, String title, String date, List<String> content, String privacy) {
         super(context);
         this.title = title;
@@ -83,9 +81,7 @@ public class EditEventDialog extends Dialog {
             List<String> updatedContent = new ArrayList<>(Arrays.asList(contentEditText.getText().toString().split("\n"))); // 개행 문자로 구분된 내용을 List<String>으로 변환
             String updatedPrivacy = getPrivacySelection(selectedPrivacyRadioButton);
 
-            if (eventUpdatedListener != null) {
-                updateEventInFirestore(updatedTitle, updatedDate, updatedContent, updatedPrivacy);
-            }
+            updateEventInFirestore(updatedTitle, updatedDate, updatedContent, updatedPrivacy);
         });
 
         cancelButton.setOnClickListener(v -> dismiss()); // 취소 버튼을 누르면 다이얼로그 닫기
@@ -109,18 +105,12 @@ public class EditEventDialog extends Dialog {
                             db.collection(collectionName).document(documentId)
                                     .set(data)
                                     .addOnSuccessListener(aVoid -> {
-                                        if (eventUpdatedListener != null) {
-                                            eventUpdatedListener.onEventUpdated(updatedTitle, updatedDate, updatedContent, updatedPrivacy);
-                                        }
-
                                         dismiss(); // 다이얼로그 닫기
                                         Toast.makeText(getContext(), "일정이 업데이트되었습니다.", Toast.LENGTH_SHORT).show(); // 성공 메시지
-
                                     })
                                     .addOnFailureListener(e -> {
                                         // 업데이트 실패 처리
                                         Toast.makeText(getContext(), "일정 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show(); // 실패 메시지
-
                                     });
                             return;
                         }
@@ -130,14 +120,6 @@ public class EditEventDialog extends Dialog {
                     // 쿼리 실패 처리
                     Toast.makeText(getContext(), "일정 업데이트 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 });
-    }
-
-    public void setOnEventUpdatedListener(OnEventUpdatedListener listener) {
-        this.eventUpdatedListener = listener;
-    }
-
-    public interface OnEventUpdatedListener {
-        void onEventUpdated(String title, String date, List<String> content, String privacy);
     }
 
     private String getPrivacySelection(RadioButton radioButton) {
