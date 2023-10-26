@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gcalendars.R;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -27,8 +26,8 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
 
     private final String collectionName = "CustomCalendar";
@@ -41,7 +40,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     private String title; // 이벤트 제목
     private String strDate; // 이벤트 날짜
-    private String[] content; // 이벤트 내용
+    private List<String> content; // 이벤트 내용
     private String privacy; // 이벤트 프라이버시
 
     @Override
@@ -65,28 +64,14 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         });
         // "일정 삭제" 버튼 클릭 이벤트 처리
         deleteButton.setOnClickListener(v -> deleteEventForDate(selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd"))));
+
         // 버튼 클릭 이벤트에서 다이얼로그를 표시
         editButton.setOnClickListener(v -> {
             EditEventDialog editDialog = new EditEventDialog(this, title, strDate, content, privacy);
-            // 이벤트가 업데이트되면 여기에서 Firestore에 업데이트하는 로직을 수행
-            editDialog.setOnEventUpdatedListener(this::updateEvent);
             editDialog.show();
         });
     }
 
-    // 이벤트를 업데이트하는 메서드
-    private void updateEvent(String updatedTitle, String updatedDate, String[] updatedContent, String updatedPrivacy) {
-        DocumentReference eventRef = db.collection(collectionName).document();
-        Map<String, Object> data = new HashMap<>();
-        data.put("title", updatedTitle);
-        data.put("date", updatedDate);
-        data.put("content", updatedContent);
-        data.put("privacy", updatedPrivacy);
-
-        eventRef.set(data)
-                .addOnSuccessListener(aVoid -> Toast.makeText(CustomCalendar.this, "일정이 업데이트되었습니다.", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(CustomCalendar.this, "일정 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show());
-    }
 
     private void initWidgets() {
         // XML 레이아웃에서 위젯을 초기화하는 메서드.
@@ -113,6 +98,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         int daysInMonth = yearMonth.lengthOfMonth();
         LocalDate firstOfMonth = date.withDayOfMonth(1);
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue(); // 1부터 7까지 (월요일부터 일요일)
+
+        // 0번째 칸부터 배열 시작하도록 수정
+        dayOfWeek %= 7; // dayOfWeek를 0부터 6까지로 변경
 
         for (int i = 0; i < 42; i++) { // 0부터 41까지
             if (i < dayOfWeek || i >= dayOfWeek + daysInMonth) {
@@ -171,23 +159,18 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                             privacy = document.getString("privacy");
                             strDate = document.getString("date");
 
-                            // 배열 처리를 위해 수정
-                            // Firebase에서 가져온 데이터를 문자열 배열로 처리
                             Object contentObj = document.get("content");
+
                             if (contentObj != null) {
                                 if (contentObj instanceof String) {
-                                    content = new String[]{contentObj.toString()};
-                                } else if (contentObj instanceof ArrayList) {
-                                    ArrayList<?> contentList = (ArrayList<?>) contentObj;
-                                    content = new String[contentList.size()];
-                                    for (int i = 0; i < contentList.size(); i++) {
-                                        content[i] = String.valueOf(contentList.get(i));
-                                    }
+                                    content = new ArrayList<>();
+                                    content.add(contentObj.toString());
+                                } else if (contentObj instanceof List) {
+                                    content = (List<String>) contentObj;
                                 }
                             } else {
                                 content = null;
                             }
-
 
                             if (title != null && !title.isEmpty()) {
                                 runOnUiThread(() -> {
@@ -196,7 +179,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                                     TextView dateContent = findViewById(R.id.textContent);
                                     if (content != null) {
                                         // HTML 줄 바꿈 태그로 개행 문자 처리
-                                        content = content.clone();
                                         String contentStr = TextUtils.join("<br>", content);
                                         dateContent.setText(Html.fromHtml(contentStr, Html.FROM_HTML_MODE_LEGACY));
                                     } else {
@@ -236,6 +218,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                     // 삭제 오류 처리
                     Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 });
+
     }
 
 }

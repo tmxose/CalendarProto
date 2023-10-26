@@ -13,10 +13,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-
-        <!-- 액션바 설정 -->
-        <item name="windowActionBar">true</item>
-        <item name="windowActionBarOverlay">true</item>
     </style>
     <style name="BorderlessButton">
         <item name="android:background">@null</item>
