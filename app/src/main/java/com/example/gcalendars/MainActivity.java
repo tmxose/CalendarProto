@@ -8,15 +8,9 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.gcalendars.custom.CustomCalendar;
-import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
-    // 변수 선언
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,18 +19,17 @@ public class MainActivity extends AppCompatActivity {
 
         // "일정 보기" 버튼 초기화 및 클릭 이벤트 처리
         Button buttonCustomCalendar = findViewById(R.id.buttonCustomCalendar);
+        Button buttonAddCalendar = findViewById(R.id.addButton);
 
         buttonCustomCalendar.setOnClickListener(v -> {
             // CustomCalendar 액티비티로 이동
             startActivity(new Intent(MainActivity.this, CustomCalendar.class));
         });
-
+        buttonAddCalendar.setOnClickListener(v ->{
+            // 다이얼로그 띄우기    
+        });
         // 액션바 설정
         setupActionBar();
-
-        // 레이아웃 요소 초기화
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
     }
 
     // 액션바 설정 및 사용자 정의 아이콘 추가
@@ -57,10 +50,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == android.R.id.home) {
-            drawerLayout.openDrawer(navigationView, true); // 사이드바 열기
-            return true;
-        } else if (id == R.id.menu_profile_settings) {
+        if (id == R.id.menu_profile_settings) {
             // "개인정보 설정" 메뉴를 눌렀을 때의 동작
             startActivity(new Intent(this, personalSettings.class)); // 개인정보 설정 화면으로 이동
             return true;
