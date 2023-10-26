@@ -35,6 +35,11 @@
         android:layout_height="wrap_content"
         android:text="@string/toMain" />
 
+    <Button
+        android:id="@+id/exitButton_to_Custom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/toCalendar" />
 
 
 </LinearLayout>

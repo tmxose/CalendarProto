@@ -28,9 +28,7 @@ public class AddEvent extends AppCompatActivity {
     private DatePickerDialog datePickerDialog;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String selectedDate;
-
-
-
+    String collectionName; // 캘린더 컬렉션 이름
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +40,9 @@ public class AddEvent extends AppCompatActivity {
         RadioGroup privacyRadioGroup = findViewById(R.id.privacyRadioGroup);
 
         Button saveButton = findViewById(R.id.buttonSaveEvent);
+
+        // 캘린더 아이디와 이름을 인텐트에서 받아와서 컬렉션 이름 설정
+        collectionName = getIntent().getStringExtra("collectionName");
 
         // 인텐트 받아오기
         Intent intent = getIntent();

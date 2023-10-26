@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,8 +19,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gcalendars.MainActivity;
 import com.example.gcalendars.R;
 
+import com.example.gcalendars.personalSettings;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -29,8 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
-
-    private final String collectionName = "CustomCalendar";
+    private String collectionName; // 캘린더 컬렉션 이름
 
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
@@ -48,6 +51,11 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calendar_custom);
         initWidgets();
+
+        // 캘린더 아이디와 이름을 인텐트에서 받아와서 컬렉션 이름 설정
+        collectionName = getIntent().getStringExtra("calendarId");
+        setTitle(getIntent().getStringExtra("calendarName"));
+
         selectedDate = LocalDate.now();
         setMonthView();
 
@@ -59,6 +67,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(CustomCalendar.this, AddEvent.class);
             intent.putExtra("selectedDate", selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd")));
+            intent.putExtra("collectionName", collectionName); // 캘린더 컬렉션 이름을 전달
             startActivity(intent); // AddEvent 액티비티 시작
         });
         // "일정 삭제" 버튼 클릭 이벤트 처리
@@ -219,5 +228,24 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 });
 
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.nav_menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_profile_settings) {
+            // "개인정보 설정" 메뉴를 눌렀을 때의 동작
+            startActivity(new Intent(this, personalSettings.class)); // 개인정보 설정 화면으로 이동
+            return true;
+        } else if (id == R.id.move_to_main) {
+            // "개인정보 설정" 메뉴를 눌렀을 때의 동작
+            startActivity(new Intent(this, MainActivity.class)); // 개인정보 설정 화면으로 이동
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

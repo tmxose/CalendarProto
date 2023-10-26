@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gcalendars.LogIn.LoginActivity;
+import com.example.gcalendars.custom.CustomCalendar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -41,8 +42,8 @@ public class personalSettings extends AppCompatActivity {
         logoutButton.setOnClickListener(v -> logout());
         Button exitButton = findViewById(R.id.exitButton);
         exitButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
-
-
+        Button exitCustomButton = findViewById(R.id.exitButton_to_Custom);
+        exitCustomButton.setOnClickListener(v -> startActivity(new Intent(this, CustomCalendar.class)));
 
     }
 

@@ -46,14 +46,13 @@
                 android:orientation="vertical"
                 tools:ignore="UselessParent">
 
-                <Button
-                    android:id="@+id/buttonCustomCalendar"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/calendarButtonsLayout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:background="@drawable/rounded_box"
-                    android:text="@string/custom_calendar"
-                    android:textColor="#FF000000" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/addButton"
@@ -65,16 +64,6 @@
                     android:textColor="@color/purple_500"
                     android:textSize="16sp"
                     android:textStyle="bold" />
-
-
-                <!-- 추가된 부분: 캘린더 버튼이 표시될 레이아웃 -->
-                <LinearLayout
-                    android:id="@+id/calendarButtonsLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-                </LinearLayout>
 
             </LinearLayout>
 

@@ -49,5 +49,7 @@
     <string name="deleteEvent">일정삭제</string>
     <string name="input_calendar_name">캘린더 이름을 입력하세요</string>
     <string name="create">생성</string>
+    <string name="mainpage">메인 화면</string>
+    <string name="toCalendar">캘린더로 이동</string>
 
 </resources>
