@@ -38,7 +38,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
-    private LocalDate selectedDate;
+    private LocalDate selectedDate = LocalDate.now();
     private TextView dateTextView; // 추가된 TextView
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -79,7 +79,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
             startActivity(intent); // AddEvent 액티비티 시작
         });
         // "일정 삭제" 버튼 클릭 이벤트 처리
-        deleteButton.setOnClickListener(v -> deleteEventsForDateRange(formattedStartDate,formattedEndDate));
+        deleteButton.setOnClickListener(v -> deleteEventsForDateRange(formattedStartDate, formattedEndDate));
 
         // 버튼 클릭 이벤트에서 다이얼로그를 표시
         editButton.setOnClickListener(v -> {
@@ -169,8 +169,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
     private void displayEventsForDateRange(final String startDate, final String endDate) {
-        String dateRange = startDate + " - " + endDate; // 시작일과 종료일을 합친 문자열 생성
-
         db.collection(collectionName)
                 .whereGreaterThanOrEqualTo("date", startDate)
                 .whereLessThanOrEqualTo("date", endDate)
@@ -180,49 +178,52 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             title = document.getString("title");
                             privacy = document.getString("privacy");
+                            String eventDate = document.getString("date");
 
-                            Object contentObj = document.get("content");
+                            if (isDateInRange(eventDate, startDate, endDate)) {
+                                Object contentObj = document.get("content");
 
-                            if (contentObj != null) {
-                                if (contentObj instanceof String) {
-                                    content = new ArrayList<>();
-                                    content.add(contentObj.toString());
-                                } else if (contentObj instanceof List) {
-                                    content = (List<String>) contentObj;
-                                }
-                            } else {
-                                content = null;
-                            }
-
-                            if (title != null && !title.isEmpty()) {
-                                runOnUiThread(() -> {
-                                    TextView dateTitle = findViewById(R.id.textDateTitle);
-                                    dateTitle.setText(title);
-                                    TextView dateContent = findViewById(R.id.textContent);
-                                    if (content != null) {
-                                        // HTML 줄 바꿈 태그로 개행 문자 처리
-                                        String contentStr = TextUtils.join("<br>", content);
-                                        dateContent.setText(Html.fromHtml(contentStr, Html.FROM_HTML_MODE_LEGACY));
-                                    } else {
-                                        dateContent.setText("내용 없음");
+                                if (contentObj != null) {
+                                    if (contentObj instanceof String) {
+                                        content = new ArrayList<>();
+                                        content.add(contentObj.toString());
+                                    } else if (contentObj instanceof List) {
+                                        content = (List<String>) contentObj;
                                     }
-                                    dateTextView.setText(dateRange); // 날짜 범위 업데이트
-                                });
-                                return;
+                                } else {
+                                    content = null;
+                                }
+
+                                if (title != null && !title.isEmpty()) {
+                                    runOnUiThread(() -> {
+                                        TextView dateTitle = findViewById(R.id.textDateTitle);
+                                        dateTitle.setText(title);
+                                        TextView dateContent = findViewById(R.id.textContent);
+                                        if (content != null) {
+                                            // HTML 줄 바꿈 태그로 개행 문자 처리
+                                            String contentStr = TextUtils.join("<br>", content);
+                                            dateContent.setText(Html.fromHtml(contentStr, Html.FROM_HTML_MODE_LEGACY));
+                                        } else {
+                                            dateContent.setText("내용 없음");
+                                        }
+                                        dateTextView.setText(eventDate); // 선택한 날짜 표시
+                                    });
+                                }
                             }
                         }
-                        runOnUiThread(() -> {
-                            TextView dateTitle = findViewById(R.id.textDateTitle);
-                            dateTitle.setText("일정 없음");
-                            TextView dateContent = findViewById(R.id.textContent);
-                            dateContent.setText("내용 없음");
-                        });
                     } else {
                         runOnUiThread(() -> Toast.makeText(CustomCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show());
                     }
                 });
     }
 
+    private boolean isDateInRange(String date, String startDate, String endDate) {
+        LocalDate eventDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy MM dd"));
+        LocalDate rangeStartDate = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyy MM dd"));
+        LocalDate rangeEndDate = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyy MM dd"));
+
+        return !eventDate.isBefore(rangeStartDate) && !eventDate.isAfter(rangeEndDate);
+    }
 
 
     // 선택한 날짜 범위에 해당하는 일정 삭제하는 메서드
