@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -69,5 +70,13 @@
 
         </FrameLayout>
 
+        <!-- 추가된 부분: 캘린더 버튼이 표시될 레이아웃 -->
+        <LinearLayout
+            android:id="@+id/calendarButtonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
