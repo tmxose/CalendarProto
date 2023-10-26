@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,7 +18,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,14 +93,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createCalendarButtons(List<UserCalendar> userCalendars) {
-        for (UserCalendar userCalendar : userCalendars) {
+        for (UserCalendar calendarInfo : userCalendars) {
             Button calendarButton = new Button(this);
-            calendarButton.setText(userCalendar.getCalendarName());
+            calendarButton.setText(calendarInfo.getCalendarName());
 
             calendarButton.setOnClickListener(view -> {
                 // 캘린더 버튼 클릭 시 커스텀 캘린더 클래스로 이동하고
                 // 캘린더 아이디와 컬렉션명을 전달
-                openCustomCalendar(userCalendar.getCalendarId(), userCalendar.getCalendarName());
+                openCustomCalendar(calendarInfo.getCalendarId(), calendarInfo.getCalendarName());
             });
 
             calendarButtonsLayout.addView(calendarButton);
