@@ -17,16 +17,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AddEvent extends AppCompatActivity {
 
-    private EditText eventStartDateEditText; // 시작 날짜를 입력할 EditText
-    private EditText eventEndDateEditText; // 종료 날짜를 입력할 EditText
+    private EditText eventStartDateEditText;
+    private EditText eventEndDateEditText;
     private EditText eventTitleEditText;
     private EditText eventContentEditText;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    String collectionName; // 캘린더 컬렉션 이름
+    private String collectionName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,79 +42,46 @@ public class AddEvent extends AppCompatActivity {
 
         Button saveButton = findViewById(R.id.buttonSaveEvent);
 
-        // 캘린더 아이디와 이름을 인텐트에서 받아와서 컬렉션 이름 설정
         collectionName = getIntent().getStringExtra("collectionName");
 
-        // 시작 날짜 선택 다이얼로그 표시
-        eventStartDateEditText.setOnClickListener(v -> showStartDateDialog());
+        eventStartDateEditText.setOnClickListener(v -> showDatePickerDialog(eventStartDateEditText));
+        eventEndDateEditText.setOnClickListener(v -> showDatePickerDialog(eventEndDateEditText));
 
-        // 종료 날짜 선택 다이얼로그 표시
-        eventEndDateEditText.setOnClickListener(v -> showEndDateDialog());
-
-        // 저장 버튼에 리스너 추가
         saveButton.setOnClickListener(v -> saveEvent(privacyRadioGroup));
     }
 
-    private void showStartDateDialog() {
-        // 현재 날짜 정보 가져오기
+    private void showDatePickerDialog(EditText editText) {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        // 날짜 선택 다이얼로그 표시
-        DatePickerDialog startDatePickerDialog = new DatePickerDialog(this,
-                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-                    // 선택한 날짜로 EditText 업데이트
-                    String selectedStartDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
-                    eventStartDateEditText.setText(selectedStartDate);
-                }, year, month, day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+            String selectedDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
+            editText.setText(selectedDate);
+        }, year, month, day);
 
-        // 다이얼로그 표시
-        startDatePickerDialog.show();
-        startDatePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
-        startDatePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
+        datePickerDialog.show();
+        datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
+        datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
     }
 
-    private void showEndDateDialog() {
-        // 현재 날짜 정보 가져오기
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        // 날짜 선택 다이얼로그 표시
-        DatePickerDialog endDatePickerDialog = new DatePickerDialog(this,
-                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-                    // 선택한 날짜로 EditText 업데이트
-                    String selectedEndDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
-                    eventEndDateEditText.setText(selectedEndDate);
-                }, year, month, day);
-
-        // 다이얼로그 표시
-        endDatePickerDialog.show();
-        endDatePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
-        endDatePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
-    }
-
-
-    // 일정을 저장하는 함수
     private void saveEvent(RadioGroup privacyRadioGroup) {
-        String eventStartDate = eventStartDateEditText.getText().toString();
-        String eventEndDate = eventEndDateEditText.getText().toString();
-        String eventTitle = eventTitleEditText.getText().toString();
-        String eventContent = eventContentEditText.getText().toString();
-        String eventPrivacy = getPrivacySelection(privacyRadioGroup);
+        String startDate = eventStartDateEditText.getText().toString();
+        String endDate = eventEndDateEditText.getText().toString();
+        String title = eventTitleEditText.getText().toString();
+        String content = eventContentEditText.getText().toString();
+        String privacy = getPrivacySelection(privacyRadioGroup);
 
-        if (!eventTitle.isEmpty() && !eventStartDate.isEmpty() && !eventEndDate.isEmpty()) {
+        if (!title.isEmpty() && !startDate.isEmpty() && !endDate.isEmpty()) {
             Map<String, Object> event = new HashMap<>();
-            event.put("privacy", eventPrivacy);
-            event.put("startDate", eventStartDate); // 시작 날짜 저장
-            event.put("endDate", eventEndDate);     // 종료 날짜 저장
-            event.put("title", eventTitle);
+            event.put("privacy", privacy);
+            event.put("startDate", startDate);
+            event.put("endDate", endDate);
+            event.put("title", title);
 
-            String[] contentLines = eventContent.split("\n");
-            ArrayList<String> contentList = new ArrayList<>(Arrays.asList(contentLines));
+            String[] contentLines = content.split("\n");
+            List<String> contentList = new ArrayList<>(Arrays.asList(contentLines));
             event.put("content", contentList);
 
             db.collection(collectionName).add(event)
@@ -129,10 +97,6 @@ public class AddEvent extends AppCompatActivity {
 
     private String getPrivacySelection(RadioGroup privacyRadioGroup) {
         int selectedId = privacyRadioGroup.getCheckedRadioButtonId();
-        if (selectedId == R.id.radioPublic) {
-            return "public";
-        } else {
-            return "private";
-        }
+        return (selectedId == R.id.radioPublic) ? "public" : "private";
     }
 }

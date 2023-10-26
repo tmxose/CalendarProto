@@ -83,7 +83,11 @@ public class EditEventDialog extends Dialog {
             String updatedEndDate = endDateEditText.getText().toString();
             List<String> updatedContent = new ArrayList<>(Arrays.asList(contentEditText.getText().toString().split("\n")));
 
-            updateEventInFirestore(updatedTitle, updatedStartDate, updatedEndDate, updatedContent, privacy);
+            if (!updatedTitle.isEmpty() && !updatedStartDate.isEmpty() && !updatedEndDate.isEmpty()) {
+                updateEventInFirestore(updatedTitle, updatedStartDate, updatedEndDate, updatedContent, privacy);
+            } else {
+                Toast.makeText(getContext(), "일정 제목, 시작 날짜, 종료 날짜를 입력해 주세요.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         cancelButton.setOnClickListener(v -> dismiss());
@@ -96,28 +100,31 @@ public class EditEventDialog extends Dialog {
                 .whereLessThanOrEqualTo("endDate", updatedEndDate)     // 종료 날짜가 선택 날짜보다 같거나 이전
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    boolean found = false;
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        if (document.exists()) {
-                            String documentId = document.getId();
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("title", updatedTitle);
-                            data.put("startDate", updatedStartDate);
-                            data.put("endDate", updatedEndDate);
-                            data.put("content", updatedContent);
-                            data.put("privacy", updatedPrivacy);
+                        found = true;
+                        String documentId = document.getId();
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("title", updatedTitle);
+                        data.put("startDate", updatedStartDate);
+                        data.put("endDate", updatedEndDate);
+                        data.put("content", updatedContent);
+                        data.put("privacy", updatedPrivacy);
 
-                            db.collection(collectionName).document(documentId)
-                                    .set(data)
-                                    .addOnSuccessListener(aVoid -> {
-                                        dismiss();
-                                        Toast.makeText(getContext(), "일정이 업데이트되었습니다.", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnFailureListener(e -> Toast.makeText(getContext(), "일정 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show());
-                            return;
-                        }
+                        db.collection(collectionName).document(documentId)
+                                .set(data)
+                                .addOnSuccessListener(aVoid -> {
+                                    dismiss();
+                                    Toast.makeText(getContext(), "일정이 업데이트되었습니다.", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(getContext(), "일정 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show());
+                        break; // 이미 찾았으면 반복 중지
+                    }
+
+                    if (!found) {
+                        Toast.makeText(getContext(), "해당 일정을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "일정 업데이트 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
     }
-
 }
