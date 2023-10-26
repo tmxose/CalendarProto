@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,8 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
 
     private final String collectionName = "CustomCalendar";
@@ -42,7 +41,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     private String title; // 이벤트 제목
     private String strDate; // 이벤트 날짜
-    private String content; // 이벤트 내용
+    private String[] content; // 이벤트 내용
     private String privacy; // 이벤트 프라이버시
 
     @Override
@@ -76,7 +75,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
     // 이벤트를 업데이트하는 메서드
-    private void updateEvent(String updatedTitle, String updatedDate, String updatedContent, String updatedPrivacy) {
+    private void updateEvent(String updatedTitle, String updatedDate, String[] updatedContent, String updatedPrivacy) {
         DocumentReference eventRef = db.collection(collectionName).document();
         Map<String, Object> data = new HashMap<>();
         data.put("title", updatedTitle);
@@ -115,7 +114,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         LocalDate firstOfMonth = date.withDayOfMonth(1);
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue(); // 1부터 7까지 (월요일부터 일요일)
 
-        for (int i = 1; i <= 42; i++) { // 0부터 41까지
+        for (int i = 0; i < 42; i++) { // 0부터 41까지
             if (i < dayOfWeek || i >= dayOfWeek + daysInMonth) {
                 daysInMonthArray.add(""); // 이전 달과 다음 달의 빈 공간
             } else {
@@ -171,7 +170,24 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                             title = document.getString("title");
                             privacy = document.getString("privacy");
                             strDate = document.getString("date");
-                            content = Objects.requireNonNull(document.get("content")).toString();
+
+                            // 배열 처리를 위해 수정
+                            // Firebase에서 가져온 데이터를 문자열 배열로 처리
+                            Object contentObj = document.get("content");
+                            if (contentObj != null) {
+                                if (contentObj instanceof String) {
+                                    content = new String[]{contentObj.toString()};
+                                } else if (contentObj instanceof ArrayList) {
+                                    ArrayList<?> contentList = (ArrayList<?>) contentObj;
+                                    content = new String[contentList.size()];
+                                    for (int i = 0; i < contentList.size(); i++) {
+                                        content[i] = String.valueOf(contentList.get(i));
+                                    }
+                                }
+                            } else {
+                                content = null;
+                            }
+
 
                             if (title != null && !title.isEmpty()) {
                                 runOnUiThread(() -> {
@@ -180,8 +196,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                                     TextView dateContent = findViewById(R.id.textContent);
                                     if (content != null) {
                                         // HTML 줄 바꿈 태그로 개행 문자 처리
-                                        content = content.replace("\n", "<br>");
-                                        dateContent.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY));
+                                        content = content.clone();
+                                        String contentStr = TextUtils.join("<br>", content);
+                                        dateContent.setText(Html.fromHtml(contentStr, Html.FROM_HTML_MODE_LEGACY));
                                     } else {
                                         dateContent.setText("내용 없음");
                                     }
@@ -219,7 +236,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                     // 삭제 오류 처리
                     Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 });
-
     }
 
 }
