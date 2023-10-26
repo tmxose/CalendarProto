@@ -57,7 +57,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
         // "일정 추가" 버튼 클릭 이벤트 처리
         addButton.setOnClickListener(v -> {
-            // 선택한 날짜를 인텐트에 추가
             Intent intent = new Intent(CustomCalendar.this, AddEvent.class);
             intent.putExtra("selectedDate", selectedDate.format(DateTimeFormatter.ofPattern("yyyy MM dd")));
             startActivity(intent); // AddEvent 액티비티 시작
