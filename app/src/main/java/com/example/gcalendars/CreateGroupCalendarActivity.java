@@ -4,25 +4,19 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
 public class CreateGroupCalendarActivity extends AppCompatActivity {
 
     private EditText groupNameEditText;
-
     private FirebaseAuth firebaseAuth;
     private DatabaseReference groupDatabaseRef;
-    private DatabaseReference userGroupRef;
     private String userId;
 
     @Override
@@ -55,18 +49,8 @@ public class CreateGroupCalendarActivity extends AppCompatActivity {
 
         // 사용자의 그룹 목록에 그룹 ID 추가
         userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
-        userGroupRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("group-calendar");
-        userGroupRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userGroupRef.child(groupId).setValue(true);
-                finish();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // 오류 처리
-            }
-        });
+        DatabaseReference userGroupRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("group-calendar");
+        userGroupRef.child(groupId).setValue(true); // 그룹 ID를 사용자의 그룹 목록에 추가
+        finish();
     }
 }
