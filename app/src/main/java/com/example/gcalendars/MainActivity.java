@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             Uri data = getIntent().getData();
             // "캘린더 공유" 메뉴를 눌렀을 때의 동작
             String groupId = Objects.requireNonNull(data).getQueryParameter("groupId");
-            String groupName = data.getQueryParameter("groupName");
+            String groupName = data.getQueryParameter("group-calendarName");
             shareCalendarURL(groupId,groupName); // 캘린더 URL을 공유하는 함수 호출
             return true;
         }

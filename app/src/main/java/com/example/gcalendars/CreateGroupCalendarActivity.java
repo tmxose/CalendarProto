@@ -43,7 +43,8 @@ public class CreateGroupCalendarActivity extends AppCompatActivity {
 
         // 그룹 정보를 Realtime Database에 저장
         DatabaseReference groupRef = groupDatabaseRef.child(Objects.requireNonNull(groupId));
-        groupRef.child("calendarName").setValue(groupName); // 그룹 이름 저장
+        groupRef.child("groupId").setValue(groupId); // 그룹 ID를 "groupId" 속성에 저장
+        groupRef.child("group-calendarName").setValue(groupName); // 그룹 이름 저장
 
 
         finish(); // 액티비티 종료
