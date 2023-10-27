@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener, EditEventDialog.OnUpdateEventListener {
+public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private String collectionName;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
     private TextView monthYearText;
@@ -73,12 +73,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         intent.putExtra("selectedEndDate", formatDate(selectedDate));
         intent.putExtra("collectionName", collectionName);
         startActivity(intent);
-    }
-
-    @Override
-    public void onUpdateEvent() {
-        // 업데이트 이벤트를 받았을 때 페이지를 갱신하는 메소드
-        displayEventsForDate(selectedDate);
     }
 
     // 일정 수정 편집 기능 다이얼로그 오픈
