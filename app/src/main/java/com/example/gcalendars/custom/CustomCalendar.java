@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private String collectionName;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
@@ -41,8 +42,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     private String title;
     private List<String> content;
     private String privacy;
-    private LocalDate selectedStartDate;
-    private LocalDate selectedEndDate;
     List<String> arrayDates = new ArrayList<>();
     private TextView dateTitle; // 전역 변수로 추가
     private TextView dateContent; // 전역 변수로 추가
@@ -55,14 +54,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         initWidgets();
         collectionName = getIntent().getStringExtra("calendarId");
         setTitle(getIntent().getStringExtra("calendarName"));
-        setInitialDateRange();
+
         setMonthView();
         setupButtons();
-    }
-
-    private void setInitialDateRange() {
-        selectedStartDate = null;
-        selectedEndDate = null;
     }
 
     private void setupButtons() {
@@ -70,14 +64,14 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         Button deleteButton = findViewById(R.id.deleteBtn);
         Button editButton = findViewById(R.id.editButton);
         addButton.setOnClickListener(v -> startAddEventActivity());
-        deleteButton.setOnClickListener(v -> deleteEventsForSelectedRange());
+        deleteButton.setOnClickListener(v -> deleteEventsForSelectedDate(selectedDate));
         editButton.setOnClickListener(v -> showEditEventDialog());
     }
 
     private void startAddEventActivity() {
         Intent intent = new Intent(CustomCalendar.this, AddEvent.class);
-        intent.putExtra("selectedStartDate", formatDate(selectedStartDate));
-        intent.putExtra("selectedEndDate", formatDate(selectedEndDate));
+        intent.putExtra("selectedStartDate", formatDate(selectedDate));
+        intent.putExtra("selectedEndDate", formatDate(selectedDate));
         intent.putExtra("collectionName", collectionName);
         startActivity(intent);
     }
@@ -109,37 +103,33 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         return date == null ? "" : date.format(formatter);
     }
 
-    private void deleteEventsForSelectedRange() {
-        if (selectedStartDate != null && selectedEndDate != null) {
-            List<String> datesToDelete = getDatesBetween(formatDate(selectedStartDate), formatDate(selectedEndDate));
+    private void deleteEventsForSelectedDate(LocalDate selectedDate) {
+        String formattedDate = formatDate(selectedDate);
 
-            db.collection(collectionName)
-                    .whereArrayContainsAny("dates", datesToDelete)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            List<DocumentReference> documentsToDelete = new ArrayList<>();
+        db.collection(collectionName)
+                .whereArrayContains("dates", formattedDate)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<DocumentReference> documentsToDelete = new ArrayList<>();
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                documentsToDelete.add(document.getReference());
-                            }
-
-                            if (!documentsToDelete.isEmpty()) {
-                                for (DocumentReference document : documentsToDelete) {
-                                    document.delete();
-                                }
-                                Toast.makeText(CustomCalendar.this, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(CustomCalendar.this, "선택한 날짜 범위에 해당하는 일정이 없습니다.", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Log.e(TAG, "Error getting documents: " + Objects.requireNonNull(task.getException()).getMessage(), task.getException());
-                            Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            documentsToDelete.add(document.getReference());
                         }
-                    });
-        } else {
-            Toast.makeText(CustomCalendar.this, "일정이 선택되지 않았습니다.", Toast.LENGTH_SHORT).show();
-        }
+
+                        if (!documentsToDelete.isEmpty()) {
+                            for (DocumentReference document : documentsToDelete) {
+                                document.delete();
+                            }
+                            Toast.makeText(CustomCalendar.this, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(CustomCalendar.this, "삭제할 일정이 없습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.e(TAG, "Error getting documents: " + Objects.requireNonNull(task.getException()).getMessage(), task.getException());
+                        Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 
@@ -266,20 +256,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                     }
                 });
     }
-
-
-    private List<String> getDatesBetween(String startDate, String endDate) {
-        List<String> dates = new ArrayList<>();
-        LocalDate start = LocalDate.parse(startDate, formatter);
-        LocalDate end = LocalDate.parse(endDate, formatter);
-
-        while (!start.isAfter(end)) {
-            dates.add(start.format(formatter));
-            start = start.plusDays(1);
-        }
-        return dates;
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
