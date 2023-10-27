@@ -44,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
             // 다이얼로그 띄우기
             showAddCalendarDialog();
         });
+        // 그룹 생성 버튼의 클릭 이벤트 처리
+        Button btnCreateGroup = findViewById(R.id.btnCreateGroup);
+        btnCreateGroup.setOnClickListener(v -> startActivity(new Intent(this, CreateGroupCalendarActivity.class)));
     }
 
     private void showAddCalendarDialog() {

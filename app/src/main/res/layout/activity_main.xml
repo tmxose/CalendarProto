@@ -64,6 +64,14 @@
                     android:textColor="@color/purple_500"
                     android:textSize="16sp"
                     android:textStyle="bold" />
+                <Button
+                    android:id="@+id/btnCreateGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/createGroup"
+                    android:layout_marginTop="16dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
 
             </LinearLayout>
 

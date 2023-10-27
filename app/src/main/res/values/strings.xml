@@ -53,5 +53,7 @@
     <string name="toCalendar">캘린더로 이동</string>
     <string name="startDateSelect">시작 날짜 선택</string>
     <string name="endDateSelect">종료 날짜 선택</string>
+    <string name="setGroupName">그룹 이름을 입력하세요</string>
+    <string name="createGroup">그룹 생성</string>
 
 </resources>
