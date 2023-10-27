@@ -102,8 +102,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     private void deleteEventsForSelectedRange() {
         db.collection(collectionName)
-                .whereGreaterThanOrEqualTo("date", formatDate(selectedStartDate))
-                .whereLessThanOrEqualTo("date", formatDate(selectedEndDate))
+                .whereArrayContainsAny("dates", getDatesBetween(formatDate(selectedStartDate), formatDate(selectedEndDate)))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -161,7 +160,8 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     // 월과 년도를 문자열로 변환
     private String monthYearFromDate(LocalDate date) {
-        return date.format(formatter);
+        DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("yy년 MM월");
+        return date.format(customFormatter);
     }
 
     // 이전 달로 이동
@@ -188,18 +188,16 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 selectedEndDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
             }
 
-            String formattedStartDate = selectedStartDate.format(formatter);
-            String formattedEndDate = selectedEndDate.format(formatter);
-            dateTextView.setText(formattedStartDate + " - " + formattedEndDate);
+            String eventDate = selectedStartDate.format(formatter); // 이 부분을 eventDate로 변경
+            dateTextView.setText(eventDate); // 선택한 날짜 표시
             // 선택한 날짜 범위에 대한 이벤트를 가져와 표시
-            displayEventsForDateRange(formattedStartDate, formattedEndDate);
+            displayEventsForDateRange(eventDate, eventDate); // 이벤트를 선택한 날짜만 표시하도록 변경
         }
     }
 
     private void displayEventsForDateRange(final String startDate, final String endDate) {
         db.collection(collectionName)
-                .whereGreaterThanOrEqualTo("startDate", startDate)
-                .whereLessThanOrEqualTo("endDate", endDate)
+                .whereArrayContainsAny("dates", getDatesBetween(startDate, endDate))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -234,15 +232,33 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                                         } else {
                                             dateContent.setText("내용 없음");
                                         }
-                                        dateTextView.setText(eventDate); // 선택한 날짜 표시
                                     });
                                 }
                             }
                         }
                     } else {
-                        runOnUiThread(() -> Toast.makeText(CustomCalendar.this, "Firebase 연결 오류", Toast.LENGTH_LONG).show());
+                        // 데이터를 가져오지 못했을 때의 처리
+                        Exception exception = task.getException();
+                        if (exception != null) {
+                            Log.e(TAG, "Error getting documents: " + exception.getMessage(), exception);
+                        } else {
+                            Log.e(TAG, "Error getting documents: Unknown error");
+                        }
+                        runOnUiThread(() -> Toast.makeText(CustomCalendar.this, "데이터 가져오기 오류", Toast.LENGTH_LONG).show());
                     }
                 });
+    }
+
+    private List<String> getDatesBetween(String startDate, String endDate) {
+        List<String> dates = new ArrayList<>();
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+
+        while (!start.isAfter(end)) {
+            dates.add(start.format(formatter));
+            start = start.plusDays(1);
+        }
+        return dates;
     }
 
     private boolean isDateInRange(String date, String startDate, String endDate) {

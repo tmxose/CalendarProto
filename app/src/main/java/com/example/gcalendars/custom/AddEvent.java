@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.gcalendars.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -28,6 +30,8 @@ public class AddEvent extends AppCompatActivity {
     private EditText eventContentEditText;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String collectionName;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +78,10 @@ public class AddEvent extends AppCompatActivity {
         String privacy = getPrivacySelection(privacyRadioGroup);
 
         if (!title.isEmpty() && !startDate.isEmpty() && !endDate.isEmpty()) {
+            List<String> dates = getDatesBetween(startDate, endDate);
             Map<String, Object> event = new HashMap<>();
             event.put("privacy", privacy);
-            event.put("startDate", startDate);
-            event.put("endDate", endDate);
+            event.put("dates", dates); // Use the dates array
             event.put("title", title);
 
             String[] contentLines = content.split("\n");
@@ -93,6 +97,18 @@ public class AddEvent extends AppCompatActivity {
         } else {
             Toast.makeText(this, "일정 제목, 시작 날짜, 종료 날짜를 입력해 주세요.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private List<String> getDatesBetween(String startDate, String endDate) {
+        List<String> dates = new ArrayList<>();
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+
+        while (!start.isAfter(end)) {
+            dates.add(start.format(formatter));
+            start = start.plusDays(1);
+        }
+        return dates;
     }
 
     private String getPrivacySelection(RadioGroup privacyRadioGroup) {
