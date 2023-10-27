@@ -34,7 +34,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     private String collectionName;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
     private TextView monthYearText;
-    TextView dateTextView;
+    private TextView dateTextView;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate = LocalDate.now();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -44,6 +44,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     private LocalDate selectedStartDate;
     private LocalDate selectedEndDate;
     List<String> arrayDates = new ArrayList<>();
+    private TextView dateTitle; // 전역 변수로 추가
+    private TextView dateContent; // 전역 변수로 추가
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +147,8 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
         monthYearText = findViewById(R.id.monthYearTV);
         dateTextView = findViewById(R.id.textDate);
+        dateTitle = findViewById(R.id.textDateTitle); // 초기화
+        dateContent = findViewById(R.id.textContent); // 초기화
     }
 
     private void setMonthView() {
@@ -196,9 +201,13 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         if (!dayText.equals("")) {
             int dayOfMonth = Integer.parseInt(dayText);
             LocalDate clickedDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
-
-            // 클릭한 날짜에 해당하는 일정 정보를 가져옴
             displayEventsForDate(clickedDate);
+            selectedDate = clickedDate; // 클릭한 날짜로 selectedDate 초기화
+        } else {
+            // 클릭한 날짜가 비어있는 경우, "일정 없음"을 표시
+            dateTextView.setText("일정 없음");
+            dateTitle.setText("일정 없음");
+            dateContent.setText("내용 없음");
         }
     }
 
@@ -214,6 +223,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                         if (hasEvents) {
                             dateTextView.setText(formattedDate);
                         } else {
+                            // 일정이 없는 경우 "일정 없음"을 표시
                             dateTextView.setText("일정 없음");
                         }
                         for (QueryDocumentSnapshot document : task.getResult()) {
@@ -235,9 +245,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
                             if (title != null && !title.isEmpty()) {
                                 runOnUiThread(() -> {
-                                    TextView dateTitle = findViewById(R.id.textDateTitle);
                                     dateTitle.setText(title);
-                                    TextView dateContent = findViewById(R.id.textContent);
                                     if (content != null) {
                                         String contentStr = TextUtils.join("\n", content);
                                         dateContent.setText(contentStr);
@@ -258,6 +266,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                     }
                 });
     }
+
 
     private List<String> getDatesBetween(String startDate, String endDate) {
         List<String> dates = new ArrayList<>();
