@@ -73,18 +73,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadUserCalendars() {
         String userUid = user.getUid();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userUid).child("calendars");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userUid);
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<UserCalendar> userCalendars = new ArrayList<>();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                for (DataSnapshot dataSnapshot : snapshot.child("calendars").getChildren()) {
                     String calendarId = dataSnapshot.getKey();
                     String calendarName = dataSnapshot.child("calendarName").getValue(String.class);
                     userCalendars.add(new UserCalendar(calendarId, calendarName));
                 }
-                // 사용자의 캘린더 정보를 로드한 후 버튼을 생성
+
+                // 사용자의 개인 캘린더 정보를 로드한 후 그룹 캘린더 정보를 추가
+                for (DataSnapshot dataSnapshot : snapshot.child("group-calendar").getChildren()) {
+                    String groupCalendarId = dataSnapshot.getKey();
+                    String groupCalendarName = dataSnapshot.child("calendarName").getValue(String.class);
+                    userCalendars.add(new UserCalendar(groupCalendarId, groupCalendarName));
+                }
+
+                // 캘린더 정보를 로드한 후 버튼을 생성
                 createCalendarButtons(userCalendars);
             }
 
@@ -94,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void createCalendarButtons(List<UserCalendar> userCalendars) {
         for (UserCalendar calendarInfo : userCalendars) {
