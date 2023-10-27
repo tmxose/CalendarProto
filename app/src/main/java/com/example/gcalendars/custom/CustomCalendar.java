@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.gcalendars.MainActivity;
 import com.example.gcalendars.R;
 import com.example.gcalendars.personalSettings;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -42,6 +43,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     private String privacy;
     private LocalDate selectedStartDate;
     private LocalDate selectedEndDate;
+    List<String> arrayDates = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +80,25 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
     private void showEditEventDialog() {
-        EditEventDialog editDialog = new EditEventDialog(this, title, formatDate(selectedStartDate), formatDate(selectedEndDate), content, privacy, collectionName);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        String documentId = db.collection(collectionName).getId(); // 해당 문서의 ID
+
+        db.collection(collectionName)
+                .document(documentId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // 데이터베이스에서 dates 필드 값을 받아와서 arrayDates 리스트에 설정
+                        List<String> datesFromDatabase = (List<String>) documentSnapshot.get("dates");
+                        if (datesFromDatabase != null) {
+                            arrayDates = new ArrayList<>(datesFromDatabase);
+                        }
+                    }
+                });
+
+        EditEventDialog editDialog = new EditEventDialog(this, title, arrayDates, content, privacy, collectionName);
         editDialog.show();
     }
 
@@ -88,15 +108,27 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
 
     private void deleteEventsForSelectedRange() {
         if (selectedStartDate != null && selectedEndDate != null) {
+            List<String> datesToDelete = getDatesBetween(formatDate(selectedStartDate), formatDate(selectedEndDate));
+
             db.collection(collectionName)
-                    .whereArrayContainsAny("dates", getDatesBetween(formatDate(selectedStartDate), formatDate(selectedEndDate)))
+                    .whereArrayContainsAny("dates", datesToDelete)
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
+                            List<DocumentReference> documentsToDelete = new ArrayList<>();
+
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                document.getReference().delete();
+                                documentsToDelete.add(document.getReference());
                             }
-                            Toast.makeText(CustomCalendar.this, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+
+                            if (!documentsToDelete.isEmpty()) {
+                                for (DocumentReference document : documentsToDelete) {
+                                    document.delete();
+                                }
+                                Toast.makeText(CustomCalendar.this, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(CustomCalendar.this, "선택한 날짜 범위에 해당하는 일정이 없습니다.", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
                             Log.e(TAG, "Error getting documents: " + Objects.requireNonNull(task.getException()).getMessage(), task.getException());
                             Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
@@ -106,6 +138,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
             Toast.makeText(CustomCalendar.this, "일정이 선택되지 않았습니다.", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void initWidgets() {
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);

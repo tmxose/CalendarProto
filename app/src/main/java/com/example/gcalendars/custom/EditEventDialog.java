@@ -18,11 +18,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 public class EditEventDialog extends Dialog {
     private final String title; // 이벤트 제목
-    private final String startDate; // 시작 날짜
-    private final String endDate; // 종료 날짜
+    private final List<String> dates; // 날짜 목록
     private final List<String> content; // 이벤트 내용
     private String privacy; // 이벤트 프라이버시
     private final String collectionName; // Firestore 컬렉션 이름
@@ -34,11 +32,10 @@ public class EditEventDialog extends Dialog {
     private EditText endDateEditText;
     private EditText contentEditText;
 
-    public EditEventDialog(Context context, String title, String startDate, String endDate, List<String> content, String privacy, String collectionName) {
+    public EditEventDialog(Context context, String title, List<String> dates, List<String> content, String privacy, String collectionName) {
         super(context);
         this.title = title;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.dates = dates;
         this.content = content;
         this.privacy = privacy;
         this.collectionName = collectionName;
@@ -56,8 +53,8 @@ public class EditEventDialog extends Dialog {
         RadioGroup privacyRadioGroup = findViewById(R.id.privacyRadioGroup);
 
         titleEditText.setText(title);
-        startDateEditText.setText(startDate);
-        endDateEditText.setText(endDate);
+        startDateEditText.setText(dates.get(0)); // 시작날짜를 설정
+        endDateEditText.setText(dates.get(1)); // 끝나는 날짜를 설정
         contentEditText.setText(TextUtils.join("\n", content));
 
         if (privacy.equals("public")) {
@@ -84,7 +81,11 @@ public class EditEventDialog extends Dialog {
             List<String> updatedContent = new ArrayList<>(Arrays.asList(contentEditText.getText().toString().split("\n")));
 
             if (!updatedTitle.isEmpty() && !updatedStartDate.isEmpty() && !updatedEndDate.isEmpty()) {
-                updateEventInFirestore(updatedTitle, updatedStartDate, updatedEndDate, updatedContent, privacy);
+                // 업데이트된 시작날짜와 끝나는 날짜를 dates 리스트에 설정
+                dates.set(0, updatedStartDate);
+                dates.set(1, updatedEndDate);
+
+                updateEventInFirestore(updatedTitle, dates, updatedContent, privacy);
             } else {
                 Toast.makeText(getContext(), "일정 제목, 시작 날짜, 종료 날짜를 입력해 주세요.", Toast.LENGTH_SHORT).show();
             }
@@ -93,11 +94,10 @@ public class EditEventDialog extends Dialog {
         cancelButton.setOnClickListener(v -> dismiss());
     }
 
-    private void updateEventInFirestore(String updatedTitle, String updatedStartDate, String updatedEndDate, List<String> updatedContent, String updatedPrivacy) {
+    private void updateEventInFirestore(String updatedTitle, List<String> updatedDates, List<String> updatedContent, String updatedPrivacy) {
         db.collection(collectionName)
                 .whereEqualTo("title", title)
-                .whereArrayContains("dates", startDate)
-                .whereArrayContains("dates", endDate)
+                .whereIn("dates", dates) // 원래 날짜 목록이 포함되어 있는 문서 찾기
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     boolean found = false;
@@ -106,7 +106,6 @@ public class EditEventDialog extends Dialog {
                         String documentId = document.getId();
                         Map<String, Object> data = new HashMap<>();
                         data.put("title", updatedTitle);
-                        List<String> updatedDates = Arrays.asList(updatedStartDate, updatedEndDate);
                         data.put("dates", updatedDates);
                         data.put("content", updatedContent);
                         data.put("privacy", updatedPrivacy);
