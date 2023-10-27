@@ -41,7 +41,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" />
                 <data android:scheme="https" />
-                <data android:host="exampleapp.com" />
+                <data android:host="groupcalendars.infinityfreeapp.com" />
             </intent-filter>
         </activity>
     </application>
