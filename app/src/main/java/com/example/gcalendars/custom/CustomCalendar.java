@@ -213,9 +213,13 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                         boolean hasEvents = !task.getResult().isEmpty();
                         if (hasEvents) {
                             dateTextView.setText(formattedDate);
+                            dateTitle.setText(""); // 클릭한 날짜에 일정이 있을 때 일정 제목을 초기화
+                            dateContent.setText(""); // 클릭한 날짜에 일정이 있을 때 일정 내용을 초기화
                         } else {
                             // 일정이 없는 경우 "일정 없음"을 표시
                             dateTextView.setText("일정 없음");
+                            dateTitle.setText("일정 없음");
+                            dateContent.setText("내용 없음");
                         }
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             title = document.getString("title");
