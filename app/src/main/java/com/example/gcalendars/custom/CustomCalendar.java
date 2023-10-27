@@ -2,7 +2,6 @@ package com.example.gcalendars.custom;
 
 import static android.content.ContentValues.TAG;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -30,14 +29,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private String collectionName;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
     private TextView monthYearText;
+    TextView dateTextView;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate = LocalDate.now();
-    private TextView dateTextView;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String title;
     private List<String> content;
@@ -58,9 +56,8 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
     private void setInitialDateRange() {
-        selectedStartDate = LocalDate.now();
-        selectedEndDate = LocalDate.now();
-        updateDateRangeText();
+        selectedStartDate = null;
+        selectedEndDate = null;
     }
 
     private void setupButtons() {
@@ -85,31 +82,29 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         editDialog.show();
     }
 
-    @SuppressLint("SetTextI18n")
-    private void updateDateRangeText() {
-        dateTextView.setText(formatDate(selectedStartDate) + " - " + formatDate(selectedEndDate));
-        displayEventsForDateRange(formatDate(selectedStartDate), formatDate(selectedEndDate));
-    }
-
     private String formatDate(LocalDate date) {
-        return date.format(formatter);
+        return date == null ? "" : date.format(formatter);
     }
 
     private void deleteEventsForSelectedRange() {
-        db.collection(collectionName)
-                .whereArrayContainsAny("dates", getDatesBetween(formatDate(selectedStartDate), formatDate(selectedEndDate)))
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            document.getReference().delete();
+        if (selectedStartDate != null && selectedEndDate != null) {
+            db.collection(collectionName)
+                    .whereArrayContainsAny("dates", getDatesBetween(formatDate(selectedStartDate), formatDate(selectedEndDate)))
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                document.getReference().delete();
+                            }
+                            Toast.makeText(CustomCalendar.this, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.e(TAG, "Error getting documents: " + Objects.requireNonNull(task.getException()).getMessage(), task.getException());
+                            Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(CustomCalendar.this, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.e(TAG, "Error getting documents: " + Objects.requireNonNull(task.getException()).getMessage(), task.getException());
-                        Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    });
+        } else {
+            Toast.makeText(CustomCalendar.this, "일정이 선택되지 않았습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initWidgets() {
@@ -167,58 +162,56 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     public void onItemClick(int position, String dayText) {
         if (!dayText.equals("")) {
             int dayOfMonth = Integer.parseInt(dayText);
-            if (selectedStartDate == null) {
-                selectedStartDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
-            } else {
-                selectedEndDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
-            }
+            LocalDate clickedDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
 
-            String eventStartDate = selectedStartDate.format(formatter);
-            String eventEndDate = selectedEndDate.format(formatter);
-            String eventDate = eventStartDate + " + " + eventEndDate;
-            dateTextView.setText(eventDate);
-            displayEventsForDateRange(eventStartDate, eventEndDate);
+            // 클릭한 날짜에 해당하는 일정 정보를 가져옴
+            displayEventsForDate(clickedDate);
         }
     }
 
-    private void displayEventsForDateRange(final String startDate, final String endDate) {
-        selectedStartDate = LocalDate.parse(startDate, formatter);
-        selectedEndDate = LocalDate.parse(endDate, formatter);
+    private void displayEventsForDate(LocalDate clickedDate) {
+        String formattedDate = clickedDate.format(formatter);
+
         db.collection(collectionName)
-                .whereArrayContainsAny("dates", getDatesBetween(startDate, endDate))
+                .whereArrayContains("dates", formattedDate)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        boolean hasEvents = !task.getResult().isEmpty();
+                        if (hasEvents) {
+                            dateTextView.setText(formattedDate);
+                        } else {
+                            dateTextView.setText("일정 없음");
+                        }
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             title = document.getString("title");
                             privacy = document.getString("privacy");
-                            String eventDate = selectedDate.format(formatter);
 
-                            if (isDateInRange(eventDate, startDate, endDate)) {
-                                Object contentObj = document.get("content");
-                                if (contentObj != null) {
-                                    if (contentObj instanceof String) {
-                                        content = new ArrayList<>();
-                                        content.add(contentObj.toString());
-                                    } else if (contentObj instanceof List) {
-                                        content = (List<String>) contentObj;
+                            // title과 privacy 정보를 가져온 후 dateContent에 표시
+                            Object contentObj = document.get("content");
+                            if (contentObj != null) {
+                                if (contentObj instanceof String) {
+                                    content = new ArrayList<>();
+                                    content.add(contentObj.toString());
+                                } else if (contentObj instanceof List) {
+                                    content = (List<String>) contentObj;
+                                }
+                            } else {
+                                content = null;
+                            }
+
+                            if (title != null && !title.isEmpty()) {
+                                runOnUiThread(() -> {
+                                    TextView dateTitle = findViewById(R.id.textDateTitle);
+                                    dateTitle.setText(title);
+                                    TextView dateContent = findViewById(R.id.textContent);
+                                    if (content != null) {
+                                        String contentStr = TextUtils.join("\n", content);
+                                        dateContent.setText(contentStr);
+                                    } else {
+                                        dateContent.setText("내용 없음");
                                     }
-                                } else {
-                                    content = null;
-                                }
-                                if (title != null && !title.isEmpty()) {
-                                    runOnUiThread(() -> {
-                                        TextView dateTitle = findViewById(R.id.textDateTitle);
-                                        dateTitle.setText(title);
-                                        TextView dateContent = findViewById(R.id.textContent);
-                                        if (content != null) {
-                                            String contentStr = TextUtils.join("\n", content); // 변경: <br>을 \n으로 변경
-                                            dateContent.setText(contentStr);
-                                        } else {
-                                            dateContent.setText("내용 없음");
-                                        }
-                                    });
-                                }
+                                });
                             }
                         }
                     } else {
@@ -245,13 +238,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         return dates;
     }
 
-    private boolean isDateInRange(String date, String startDate, String endDate) {
-        LocalDate eventDate = LocalDate.parse(date, formatter);
-        LocalDate rangeStartDate = LocalDate.parse(startDate, formatter);
-        LocalDate rangeEndDate = LocalDate.parse(endDate, formatter);
-
-        return !eventDate.isBefore(rangeStartDate) && !eventDate.isAfter(rangeEndDate);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
