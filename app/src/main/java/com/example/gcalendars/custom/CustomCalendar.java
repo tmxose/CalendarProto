@@ -1,7 +1,6 @@
 package com.example.gcalendars.custom;
 
 import static android.content.ContentValues.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,14 +14,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gcalendars.MainActivity;
 import com.example.gcalendars.R;
-
 import com.example.gcalendars.personalSettings;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -32,22 +29,21 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
-    private String collectionName; // 캘린더 컬렉션 이름
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
+    private String collectionName;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate = LocalDate.now();
-    private TextView dateTextView; // 추가된 TextView
+    private TextView dateTextView;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    private String title; // 이벤트 제목
-    private List<String> content; // 이벤트 내용
-    private String privacy; // 이벤트 프라이버시
-    private LocalDate selectedStartDate; // 시작 날짜
-    private LocalDate selectedEndDate;   // 종료 날짜
+    private String title;
+    private List<String> content;
+    private String privacy;
+    private LocalDate selectedStartDate;
+    private LocalDate selectedEndDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +64,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     }
 
     private void setupButtons() {
-        // 버튼 클릭 이벤트 처리 추가
         Button addButton = findViewById(R.id.buttonAdd);
         Button deleteButton = findViewById(R.id.deleteBtn);
         Button editButton = findViewById(R.id.editButton);
@@ -111,20 +106,18 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                         }
                         Toast.makeText(CustomCalendar.this, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
                     } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        Log.e(TAG, "Error getting documents: " + Objects.requireNonNull(task.getException()).getMessage(), task.getException());
                         Toast.makeText(CustomCalendar.this, "일정 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void initWidgets() {
-        // XML 레이아웃에서 위젯을 초기화하는 메서드.
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
         monthYearText = findViewById(R.id.monthYearTV);
-        dateTextView = findViewById(R.id.textDate); // 수정된 TextView 초기화
+        dateTextView = findViewById(R.id.textDate);
     }
 
-    // 월 단위로 뷰 설정
     private void setMonthView() {
         monthYearText.setText(monthYearFromDate(selectedDate));
         ArrayList<String> daysInMonth = daysInMonthArray(selectedDate);
@@ -135,22 +128,19 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         calendarRecyclerView.setAdapter(calendarAdapter);
     }
 
-    @NonNull
     private ArrayList<String> daysInMonthArray(LocalDate date) {
         ArrayList<String> daysInMonthArray = new ArrayList<>();
         YearMonth yearMonth = YearMonth.from(date);
         int daysInMonth = yearMonth.lengthOfMonth();
         LocalDate firstOfMonth = date.withDayOfMonth(1);
-        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue(); // 1부터 7까지 (월요일부터 일요일)
+        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
+        dayOfWeek %= 7;
 
-        // 0번째 칸부터 배열 시작하도록 수정
-        dayOfWeek %= 7; // dayOfWeek를 0부터 6까지로 변경
-
-        for (int i = 0; i < 42; i++) { // 0부터 41까지
+        for (int i = 0; i < 42; i++) {
             if (i < dayOfWeek || i >= dayOfWeek + daysInMonth) {
-                daysInMonthArray.add(""); // 이전 달과 다음 달의 빈 공간
+                daysInMonthArray.add("");
             } else {
-                int dayOfMonth = i - dayOfWeek + 1; // 날짜를 채웁니다.
+                int dayOfMonth = i - dayOfWeek + 1;
                 daysInMonthArray.add(String.valueOf(dayOfMonth));
             }
         }
@@ -158,28 +148,23 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         return daysInMonthArray;
     }
 
-    // 월과 년도를 문자열로 변환
     private String monthYearFromDate(LocalDate date) {
         DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("yy년 MM월");
         return date.format(customFormatter);
     }
 
-    // 이전 달로 이동
     public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
         setMonthView();
     }
 
-    // 다음 달로 이동
     public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
         setMonthView();
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onItemClick(int position, String dayText) {
-        // 캘린더의 날짜를 클릭했을 때 호출되는 메서드입니다.
         if (!dayText.equals("")) {
             int dayOfMonth = Integer.parseInt(dayText);
             if (selectedStartDate == null) {
@@ -188,10 +173,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 selectedEndDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
             }
 
-            String eventDate = selectedStartDate.format(formatter); // 이 부분을 eventDate로 변경
-            dateTextView.setText(eventDate); // 선택한 날짜 표시
-            // 선택한 날짜 범위에 대한 이벤트를 가져와 표시
-            displayEventsForDateRange(eventDate, eventDate); // 이벤트를 선택한 날짜만 표시하도록 변경
+            String eventDate = selectedStartDate.format(formatter);
+            dateTextView.setText(eventDate);
+            displayEventsForDateRange(eventDate, eventDate);
         }
     }
 
@@ -204,11 +188,9 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             title = document.getString("title");
                             privacy = document.getString("privacy");
-
                             String eventDate = selectedDate.format(formatter);
                             if (isDateInRange(eventDate, startDate, endDate)) {
                                 Object contentObj = document.get("content");
-
                                 if (contentObj != null) {
                                     if (contentObj instanceof String) {
                                         content = new ArrayList<>();
@@ -219,14 +201,12 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                                 } else {
                                     content = null;
                                 }
-
                                 if (title != null && !title.isEmpty()) {
                                     runOnUiThread(() -> {
                                         TextView dateTitle = findViewById(R.id.textDateTitle);
                                         dateTitle.setText(title);
                                         TextView dateContent = findViewById(R.id.textContent);
                                         if (content != null) {
-                                            // HTML 줄 바꿈 태그로 개행 문자 처리
                                             String contentStr = TextUtils.join("<br>", content);
                                             dateContent.setText(Html.fromHtml(contentStr, Html.FROM_HTML_MODE_LEGACY));
                                         } else {
@@ -237,7 +217,6 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                             }
                         }
                     } else {
-                        // 데이터를 가져오지 못했을 때의 처리
                         Exception exception = task.getException();
                         if (exception != null) {
                             Log.e(TAG, "Error getting documents: " + exception.getMessage(), exception);
@@ -279,14 +258,12 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_profile_settings) {
-            // "개인정보 설정" 메뉴를 눌렀을 때의 동작
             Intent intent = new Intent(this, personalSettings.class);
-            intent.putExtra("calendarId", collectionName); // 캘린더 컬렉션 이름을 전달
-            startActivity(intent); // AddEvent 액티비티 시작 // 개인정보 설정 화면으로 이동
+            intent.putExtra("calendarId", collectionName);
+            startActivity(intent);
             return true;
         } else if (id == R.id.move_to_main) {
-            // "개인정보 설정" 메뉴를 눌렀을 때의 동작
-            startActivity(new Intent(this, MainActivity.class)); // 개인정보 설정 화면으로 이동
+            startActivity(new Intent(this, MainActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
