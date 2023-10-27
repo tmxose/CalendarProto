@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
+public class CustomCalendar extends AppCompatActivity implements CalendarAdapter.OnItemListener, EditEventDialog.OnUpdateEventListener {
     private String collectionName;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
     private TextView monthYearText;
@@ -43,9 +43,8 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
     private List<String> content;
     private String privacy;
     List<String> arrayDates = new ArrayList<>();
-    private TextView dateTitle; // 전역 변수로 추가
-    private TextView dateContent; // 전역 변수로 추가
-
+    public TextView dateTitle; // 전역 변수로 추가
+    public TextView dateContent; // 전역 변수로 추가
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,28 +75,36 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         startActivity(intent);
     }
 
-    private void showEditEventDialog() {
+    @Override
+    public void onUpdateEvent() {
+        // 업데이트 이벤트를 받았을 때 페이지를 갱신하는 메소드
+        displayEventsForDate(selectedDate);
+    }
 
+    // 일정 수정 편집 기능 다이얼로그 오픈
+    private void showEditEventDialog() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        String documentId = db.collection(collectionName).getId(); // 해당 문서의 ID
-
+        // Firestore에서 해당 일정을 찾기 위해 쿼리를 작성합니다.
         db.collection(collectionName)
-                .document(documentId)
+                .whereArrayContains("dates", formatDate(selectedDate)) // 선택한 날짜가 포함된 문서를 찾습니다
+                .whereEqualTo("title", title) // 일정 제목과도 일치해야 합니다
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        // 데이터베이스에서 dates 필드 값을 받아와서 arrayDates 리스트에 설정
-                        List<String> datesFromDatabase = (List<String>) documentSnapshot.get("dates");
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        List<String> datesFromDatabase = (List<String>) document.get("dates");
                         if (datesFromDatabase != null) {
                             arrayDates = new ArrayList<>(datesFromDatabase);
                         }
+
+                        // EditEventDialog를 생성하고 표시합니다.
+                        EditEventDialog editDialog = new EditEventDialog(this, title, formatDate(selectedDate), arrayDates, content, privacy, collectionName);
+                        editDialog.show();
+                        break; // 첫 번째 일치하는 문서만 처리
                     }
                 });
-
-        EditEventDialog editDialog = new EditEventDialog(this, title, arrayDates, content, privacy, collectionName);
-        editDialog.show();
     }
+
 
     private String formatDate(LocalDate date) {
         return date == null ? "" : date.format(formatter);

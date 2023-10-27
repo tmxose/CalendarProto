@@ -59,7 +59,7 @@
         android:importantForAutofill="no"
         android:inputType="none"
         android:minHeight="48dp"
-        android:onClick="showStartDateDialog"
+        android:onClick="showEndDateDialog"
         android:padding="8dp"
         tools:ignore="TextFields" />
 
