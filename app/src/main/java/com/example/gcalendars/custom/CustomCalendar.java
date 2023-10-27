@@ -1,10 +1,10 @@
 package com.example.gcalendars.custom;
 
 import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -173,13 +173,17 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 selectedEndDate = LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), dayOfMonth);
             }
 
-            String eventDate = selectedStartDate.format(formatter);
+            String eventStartDate = selectedStartDate.format(formatter);
+            String eventEndDate = selectedEndDate.format(formatter);
+            String eventDate = eventStartDate + " + " + eventEndDate;
             dateTextView.setText(eventDate);
-            displayEventsForDateRange(eventDate, eventDate);
+            displayEventsForDateRange(eventStartDate, eventEndDate);
         }
     }
 
     private void displayEventsForDateRange(final String startDate, final String endDate) {
+        selectedStartDate = LocalDate.parse(startDate, formatter);
+        selectedEndDate = LocalDate.parse(endDate, formatter);
         db.collection(collectionName)
                 .whereArrayContainsAny("dates", getDatesBetween(startDate, endDate))
                 .get()
@@ -189,6 +193,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                             title = document.getString("title");
                             privacy = document.getString("privacy");
                             String eventDate = selectedDate.format(formatter);
+
                             if (isDateInRange(eventDate, startDate, endDate)) {
                                 Object contentObj = document.get("content");
                                 if (contentObj != null) {
@@ -207,8 +212,8 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                                         dateTitle.setText(title);
                                         TextView dateContent = findViewById(R.id.textContent);
                                         if (content != null) {
-                                            String contentStr = TextUtils.join("<br>", content);
-                                            dateContent.setText(Html.fromHtml(contentStr, Html.FROM_HTML_MODE_LEGACY));
+                                            String contentStr = TextUtils.join("\n", content); // 변경: <br>을 \n으로 변경
+                                            dateContent.setText(contentStr);
                                         } else {
                                             dateContent.setText("내용 없음");
                                         }
