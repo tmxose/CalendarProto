@@ -1,6 +1,5 @@
 package com.example.gcalendars.custom;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,11 +16,10 @@ import com.example.gcalendars.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +38,7 @@ public class EditEventDialog extends Dialog {
     private EditText endDateEditText;
     private EditText contentEditText;
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
     public EditEventDialog(Context context, String title, String selectedDate, List<String> dates, List<String> content, String privacy, String collectionName) {
         super(context);
         this.title = title;
@@ -163,20 +162,14 @@ public class EditEventDialog extends Dialog {
     }
 
     private List<String> getDatesBetween(String startDate, String endDate) {
-        List<String> dateList = new ArrayList<>();
-        try {
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date start = sdf.parse(startDate);
-            Date end = sdf.parse(endDate);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(start);
-            while (!calendar.getTime().after(end)) {
-                dateList.add(sdf.format(calendar.getTime()));
-                calendar.add(Calendar.DATE, 1);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        List<String> dates = new ArrayList<>();
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+
+        while (!start.isAfter(end)) {
+            dates.add(start.format(formatter));
+            start = start.plusDays(1);
         }
-        return dateList;
+        return dates;
     }
 }
