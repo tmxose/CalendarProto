@@ -1,15 +1,14 @@
 package com.example.gcalendars;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gcalendars.LogIn.UserCalendar;
@@ -23,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseUser user;
@@ -71,17 +71,32 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, personalSettings.class)); // 개인정보 설정 화면으로 이동
             return true;
         } else if (id == R.id.menu_share_calendar) {
+            Uri data = getIntent().getData();
             // "캘린더 공유" 메뉴를 눌렀을 때의 동작
-            shareCalendarURL(); // 캘린더 URL을 공유하는 함수 호출
+            String groupId = Objects.requireNonNull(data).getQueryParameter("groupId");
+            String groupName = data.getQueryParameter("groupName");
+            shareCalendarURL(groupId,groupName); // 캘린더 URL을 공유하는 함수 호출
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-    private void shareCalendarURL() {
-        // 여기에서 캘린더 URL을 얻고 공유하는 코드를 작성
-        // 예를 들어, Intent를 사용하여 URL을 다른 앱으로 공유할 수 있습니다.
-        // 여기에 URL 공유 코드를 추가하세요.
-        Toast.makeText(this, "캘린더 URL을 공유합니다.", Toast.LENGTH_SHORT).show();
+    private void shareCalendarURL(String calendarId, String calendarName) {
+        // 여기에서 캘린더 ID와 이름을 사용하여 URL을 생성하고 공유하는 코드를 작성
+        // 캘린더 ID와 이름을 이용하여 URL을 생성
+        String calendarURL = generateCalendarURL(calendarId, calendarName);
+
+        // 캘린더 URL을 Intent에 추가
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, calendarURL);
+
+        // 공유 다이얼로그를 띄우기
+        startActivity(Intent.createChooser(shareIntent, "캘린더 URL 공유"));
+    }
+    private String generateCalendarURL(String calendarId, String calendarName) {
+        String baseUrl = "https://groupcalendars.infinityfreeapp.com/calendar";
+        String query = "calendarId=" + calendarId + "&calendarName=" + calendarName;
+        return baseUrl + "?" + query;
     }
     private void loadUserCalendars() {
         String userUid = user.getUid();
