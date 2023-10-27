@@ -14,9 +14,7 @@ import java.util.Objects;
 public class CreateGroupCalendarActivity extends AppCompatActivity {
 
     private EditText groupNameEditText;
-    private FirebaseAuth firebaseAuth;
     private DatabaseReference groupDatabaseRef;
-    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +24,10 @@ public class CreateGroupCalendarActivity extends AppCompatActivity {
         groupNameEditText = findViewById(R.id.groupNameEditText);
         Button createGroupButton = findViewById(R.id.createGroupButton);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        String userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
 
-        groupDatabaseRef = FirebaseDatabase.getInstance().getReference().child("group-calendar");
+        groupDatabaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("group-calendar");
 
         createGroupButton.setOnClickListener(v -> createGroup());
     }
@@ -47,11 +45,6 @@ public class CreateGroupCalendarActivity extends AppCompatActivity {
         DatabaseReference groupRef = groupDatabaseRef.child(Objects.requireNonNull(groupId));
         groupRef.child("calendarName").setValue(groupName); // 그룹 이름 저장
 
-        // 사용자의 그룹 목록에 그룹 ID 추가
-        userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
-        DatabaseReference userGroupRef;
-        userGroupRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("group-calendar");
-        userGroupRef.child(groupId).setValue(true); // 그룹 ID를 사용자의 그룹 목록에 추가
 
         finish(); // 액티비티 종료
 
