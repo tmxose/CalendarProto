@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -67,10 +69,19 @@ public class MainActivity extends AppCompatActivity {
             // "개인정보 설정" 메뉴를 눌렀을 때의 동작
             startActivity(new Intent(this, personalSettings.class)); // 개인정보 설정 화면으로 이동
             return true;
+        } else if (id == R.id.menu_share_calendar) {
+            // "캘린더 공유" 메뉴를 눌렀을 때의 동작
+            shareCalendarURL(); // 캘린더 URL을 공유하는 함수 호출
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
+    private void shareCalendarURL() {
+        // 여기에서 캘린더 URL을 얻고 공유하는 코드를 작성
+        // 예를 들어, Intent를 사용하여 URL을 다른 앱으로 공유할 수 있습니다.
+        // 여기에 URL 공유 코드를 추가하세요.
+        Toast.makeText(this, "캘린더 URL을 공유합니다.", Toast.LENGTH_SHORT).show();
+    }
     private void loadUserCalendars() {
         String userUid = user.getUid();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userUid);

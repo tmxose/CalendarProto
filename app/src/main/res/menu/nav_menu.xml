@@ -2,4 +2,7 @@
     <item
         android:id="@+id/menu_profile_settings"
         android:title="@string/personalSettings" />
+    <item
+        android:id="@+id/menu_share_calendar"
+        android:title="@string/groupURL" />
 </menu>
