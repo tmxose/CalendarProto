@@ -152,7 +152,7 @@ public class EditEventDialog extends Dialog {
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth1) -> {
-            String selectedDate = year1 + "-" + (month1 + 1) + "-" + dayOfMonth1;
+            String selectedDate = year1 + " " + (month1 + 1) + " " + dayOfMonth1;
             endDateEditText.setText(selectedDate);
         }, year, month, dayOfMonth);
 
