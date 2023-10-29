@@ -4,5 +4,5 @@
         android:title="@string/personalSettings" />
     <item
         android:id="@+id/menu_share_calendar"
-        android:title="@string/groupURL" />
+        android:title="@string/friends" />
 </menu>

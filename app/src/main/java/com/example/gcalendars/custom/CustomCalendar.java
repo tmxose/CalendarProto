@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gcalendars.FriendsActivity;
 import com.example.gcalendars.MainActivity;
 import com.example.gcalendars.R;
 import com.example.gcalendars.personalSettings;
@@ -278,6 +279,10 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
             return true;
         } else if (id == R.id.move_to_main) {
             startActivity(new Intent(this, MainActivity.class));
+            return true;
+        }else if (id == R.id.menu_share_calendar) {
+            // "친구 관리" 버튼을 눌렀을 때의 동작
+            startActivity(new Intent(this, FriendsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

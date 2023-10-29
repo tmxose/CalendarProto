@@ -66,13 +66,6 @@ public class RegisterActivity extends AppCompatActivity {
         DatabaseReference userRef = databaseReference.child(uid);
         userRef.child("username").setValue(username);
         userRef.child("email").setValue(email);
-
-        // 예시로 두 개의 캘린더 추가
-        DatabaseReference calendarsRef = userRef.child("calendars");
-        DatabaseReference calendar1Ref = calendarsRef.push();
-        DatabaseReference calendar2Ref = calendarsRef.push();
-        calendar1Ref.child("calendarName").setValue("캘린더 이름 1");
-        calendar2Ref.child("calendarName").setValue("캘린더 이름 2");
     }
 
     private void sendEmailVerification(FirebaseUser user) {

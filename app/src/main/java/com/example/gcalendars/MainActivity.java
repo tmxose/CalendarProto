@@ -1,12 +1,13 @@
 package com.example.gcalendars;
 
+
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,16 +23,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseUser user;
     private LinearLayout calendarButtonsLayout;
+    private DatabaseReference databaseReference; // 추가: 데이터베이스 레퍼런스
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (user != null) {
             loadUserCalendars();
+            checkAndRespondToGroupCalendarRequests(user.getUid()); // 수정: user.getUid()로 사용자 ID 가져오기
         }
 
         Button buttonAddCalendar = findViewById(R.id.addButton);
@@ -71,32 +75,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, personalSettings.class)); // 개인정보 설정 화면으로 이동
             return true;
         } else if (id == R.id.menu_share_calendar) {
-            Uri data = getIntent().getData();
-            // "캘린더 공유" 메뉴를 눌렀을 때의 동작
-            String groupId = Objects.requireNonNull(data).getQueryParameter("groupId");
-            String groupName = data.getQueryParameter("group-calendarName");
-            shareCalendarURL(groupId,groupName); // 캘린더 URL을 공유하는 함수 호출
+            // "친구 관리" 버튼을 눌렀을 때의 동작
+            startActivity(new Intent(this, FriendsActivity.class));
             return true;
         }
+
         return super.onOptionsItemSelected(item);
-    }
-    private void shareCalendarURL(String calendarId, String calendarName) {
-        // 여기에서 캘린더 ID와 이름을 사용하여 URL을 생성하고 공유하는 코드를 작성
-        // 캘린더 ID와 이름을 이용하여 URL을 생성
-        String calendarURL = generateCalendarURL(calendarId, calendarName);
-
-        // 캘린더 URL을 Intent에 추가
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, calendarURL);
-
-        // 공유 다이얼로그를 띄우기
-        startActivity(Intent.createChooser(shareIntent, "캘린더 URL 공유"));
-    }
-    private String generateCalendarURL(String calendarId, String calendarName) {
-        String baseUrl = "https://groupcalendars.infinityfreeapp.com/calendar";
-        String query = "calendarId=" + calendarId + "&calendarName=" + calendarName;
-        return baseUrl + "?" + query;
     }
     private void loadUserCalendars() {
         String userUid = user.getUid();
@@ -114,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
 
                 // 사용자의 개인 캘린더 정보를 로드한 후 그룹 캘린더 정보를 추가
                 for (DataSnapshot dataSnapshot : snapshot.child("group-calendar").getChildren()) {
-                    String groupCalendarId = dataSnapshot.getKey();
-                    String groupCalendarName = dataSnapshot.child("calendarName").getValue(String.class);
+                    String groupCalendarId = dataSnapshot.child("groupId").getValue(String.class); // "groupId" 필드 사용
+                    String groupCalendarName = dataSnapshot.child("group-calendarName").getValue(String.class); // "group-calendarName" 필드 사용
                     userCalendars.add(new UserCalendar(groupCalendarId, groupCalendarName));
                 }
 
@@ -154,5 +138,29 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void checkAndRespondToGroupCalendarRequests(String userID) {
+        DatabaseReference friendRequestsRef = databaseReference.child("users").child(userID).child("group-calendar-requests");
+
+        friendRequestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot requestSnapshot : dataSnapshot.getChildren()) {
+                    String groupID = requestSnapshot.child("groupID").getValue(String.class);
+                    String groupCalendarName = requestSnapshot.child("groupCalendarName").getValue(String.class);
+                    String requestStatus = requestSnapshot.child("status").getValue(String.class);
+
+                    if ("pending".equals(requestStatus)) {
+                        FriendsActivity.showGroupCalendarRequestDialog(MainActivity.this, userID, groupID, groupCalendarName);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this, "그룹 캘린더 공유 요청을 확인하는 동안 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 }

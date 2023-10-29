@@ -56,5 +56,10 @@
     <string name="setGroupName">그룹 이름을 입력하세요</string>
     <string name="createGroup">그룹 생성</string>
     <string name="groupURL">그룹 공유 URL 전송</string>
+    <string name="friends">친구관리</string>
+    <string name="friendList">친구 목록</string>
+    <string name="friendsRequest">친구 요청</string>
+    <string name="addFriends">친구 추가</string>
+    <string name="textEmailAddress">친구의 이메일을 입력하세요</string>
 
 </resources>

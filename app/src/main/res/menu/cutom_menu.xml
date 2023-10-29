@@ -5,4 +5,7 @@
     <item
         android:id="@+id/move_to_main"
         android:title="@string/mainpage"/>
+    <item
+        android:id="@+id/menu_share_calendar"
+        android:title="@string/friends" />
 </menu>
