@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#F5F5F5"
+    tools:context=".FriendsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/editTextFriendEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="#ffffff"
+            android:hint="@string/textEmailAddress"
+            android:minHeight="48dp"
+            android:padding="8dp"
+            android:inputType="textEmailAddress"
+            android:importantForAutofill="no"
+            tools:ignore="VisualLintTextFieldSize" />
+
+        <Button
+            android:id="@+id/buttonAddFriend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/addFriends"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp"
+            tools:ignore="VisualLintButtonSize" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/friendList"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp" />
+
+        <ListView
+            android:id="@+id/listViewFriends"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            tools:ignore="NestedScrolling" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/friendsRequest"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp" />
+
+        <ListView
+            android:id="@+id/listViewFriendRequests"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            tools:ignore="NestedScrolling" />
+    </LinearLayout>
+</ScrollView>
