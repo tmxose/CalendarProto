@@ -1,5 +1,6 @@
 package com.example.gcalendars.custom;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -61,7 +62,9 @@ public class AddEvent extends AppCompatActivity {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-            String selectedDate = selectedYear + " " + (selectedMonth + 1) + " " + selectedDayOfMonth;
+            // 월과 날짜를 2자리로 표시하고 월에 1을 더합니다.
+            @SuppressLint("DefaultLocale")
+            String selectedDate = String.format("%04d %02d %02d", selectedYear, selectedMonth + 1, selectedDayOfMonth);
             editText.setText(selectedDate);
         }, year, month, day);
 

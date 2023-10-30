@@ -1,5 +1,6 @@
 package com.example.gcalendars.custom;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -136,7 +137,9 @@ public class EditEventDialog extends Dialog {
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth1) -> {
-            String selectedDate = year1 + " " + (month1 + 1) + " " + dayOfMonth1;
+            // 월과 날짜를 2자리로 표시하고 월에 1을 더합니다.
+            @SuppressLint("DefaultLocale")
+            String selectedDate = String.format("%04d %02d %02d", year1, month1 + 1, dayOfMonth1);
             startDateEditText.setText(selectedDate);
         }, year, month, dayOfMonth);
 
@@ -152,7 +155,9 @@ public class EditEventDialog extends Dialog {
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth1) -> {
-            String selectedDate = year1 + " " + (month1 + 1) + " " + dayOfMonth1;
+            // 월과 날짜를 2자리로 표시하고 월에 1을 더합니다.
+            @SuppressLint("DefaultLocale")
+            String selectedDate = String.format("%04d %02d %02d", year1, month1 + 1, dayOfMonth1);
             endDateEditText.setText(selectedDate);
         }, year, month, dayOfMonth);
 

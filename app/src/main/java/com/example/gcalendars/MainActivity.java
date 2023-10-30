@@ -116,6 +116,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void createCalendarButtons(List<UserCalendar> userCalendars) {
+        // 기존 버튼을 모두 제거
+        calendarButtonsLayout.removeAllViews();
+
         for (UserCalendar calendarInfo : userCalendars) {
             Button calendarButton = new Button(this);
             calendarButton.setText(calendarInfo.getCalendarName());
@@ -139,18 +142,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkAndRespondToGroupCalendarRequests(String userID) {
-        DatabaseReference friendRequestsRef = databaseReference.child("users").child(userID).child("group-calendar-requests");
+        DatabaseReference userRef = databaseReference.child("users").child(userID).child("group-calendar-requests");
 
-        friendRequestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot requestSnapshot : dataSnapshot.getChildren()) {
                     String groupID = requestSnapshot.child("groupID").getValue(String.class);
                     String groupCalendarName = requestSnapshot.child("groupCalendarName").getValue(String.class);
                     String requestStatus = requestSnapshot.child("status").getValue(String.class);
-
+                    String userName = requestSnapshot.child("username").getValue(String.class);
                     if ("pending".equals(requestStatus)) {
-                        FriendsActivity.showGroupCalendarRequestDialog(MainActivity.this, userID, groupID, groupCalendarName);
+                        FriendsActivity.showGroupCalendarRequestDialog(MainActivity.this, userName, groupID, groupCalendarName);
                         break;
                     }
                 }
