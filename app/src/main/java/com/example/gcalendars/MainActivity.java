@@ -123,9 +123,10 @@ public class MainActivity extends AppCompatActivity {
                 // 캘린더 아이디와 컬렉션명을 전달
                 openCustomCalendar(calendarInfo.getCalendarId(), calendarInfo.getCalendarName());
             });
+
             calendarButton.setOnLongClickListener(view -> {
                 showDeleteDialog(calendarInfo.getCalendarId(), calendarInfo.getCalendarName());
-                return true; // Return true to indicate that the long click event was consumed
+                return true;
             });
             calendarButtonsLayout.addView(calendarButton);
         }

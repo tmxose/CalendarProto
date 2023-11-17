@@ -52,9 +52,13 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calendar_custom);
         initWidgets();
-        collectionName = getIntent().getStringExtra("calendarId");
-        setTitle(getIntent().getStringExtra("calendarName"));
 
+        collectionName = getIntent().getStringExtra("calendarId");
+        String calendarName = getIntent().getStringExtra("calendarName");
+        setTitle(calendarName);
+
+        TextView calendarTitle = findViewById(R.id.calendarTitle);
+        calendarTitle.setText(calendarName);
         setMonthView();
         setupButtons();
     }
