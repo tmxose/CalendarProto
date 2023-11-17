@@ -10,10 +10,12 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.gcalendars.LogIn.UserCalendar;
-import com.example.gcalendars.custom.CustomCalendar;
+import com.example.gcalendars.customs.CustomCalendar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -46,14 +48,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Button buttonAddCalendar = findViewById(R.id.addButton);
-
-        buttonAddCalendar.setOnClickListener(v -> {
-            // 다이얼로그 띄우기
-            showAddCalendarDialog();
-        });
-        // 그룹 생성 버튼의 클릭 이벤트 처리
-        Button btnCreateGroup = findViewById(R.id.btnCreateGroup);
-        btnCreateGroup.setOnClickListener(v -> startActivity(new Intent(this, CreateGroupCalendarActivity.class)));
+        buttonAddCalendar.setOnClickListener(v -> showAddCalendarDialog());
     }
 
     private void showAddCalendarDialog() {
@@ -128,9 +123,64 @@ public class MainActivity extends AppCompatActivity {
                 // 캘린더 아이디와 컬렉션명을 전달
                 openCustomCalendar(calendarInfo.getCalendarId(), calendarInfo.getCalendarName());
             });
-
+            calendarButton.setOnLongClickListener(view -> {
+                showDeleteDialog(calendarInfo.getCalendarId(), calendarInfo.getCalendarName());
+                return true; // Return true to indicate that the long click event was consumed
+            });
             calendarButtonsLayout.addView(calendarButton);
         }
+    }
+    private void showDeleteDialog(String calendarId, String calendarName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("캘린더 삭제");
+        builder.setMessage(calendarName + " 캘린더를 삭제하시겠습니까?");
+
+        builder.setPositiveButton("삭제", (dialog, which) ->
+                deleteCalendar(calendarId, user.getUid()));
+
+        builder.setNegativeButton("취소", (dialog, which) -> {
+            // 사용자가 취소한 경우 아무 작업도 수행하지 않음
+        });
+
+        AlertDialog alertDialog = builder.create();
+        setDialogButtonColors(alertDialog);
+        alertDialog.show();
+    }
+
+    private void setDialogButtonColors(AlertDialog alertDialog) {
+        alertDialog.setOnShowListener(dialogInterface -> {
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.blue));
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.blue));
+        });
+    }
+
+    private void deleteCalendar(String calendarId, String userID) {
+        DatabaseReference calendarsRef = databaseReference.child("users").child(userID).child("calendars").child(calendarId);
+        DatabaseReference groupCalendarsRef = databaseReference.child("users").child(userID).child("group-calendar").child(calendarId);
+
+        // calendars 경로에서 삭제
+        calendarsRef.removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    // 캘린더 삭제 성공
+                    Toast.makeText(MainActivity.this, "캘린더가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    // 필요하다면 UI 업데이트 등 추가 작업 수행
+                })
+                .addOnFailureListener(e -> {
+                    // 캘린더 삭제 실패
+                    Toast.makeText(MainActivity.this, "캘린더 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                });
+
+        // group-calendar 경로에서 삭제
+        groupCalendarsRef.removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    // 캘린더 삭제 성공
+                    Toast.makeText(MainActivity.this, "캘린더가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    // 필요하다면 UI 업데이트 등 추가 작업 수행
+                })
+                .addOnFailureListener(e -> {
+                    // 캘린더 삭제 실패
+                    Toast.makeText(MainActivity.this, "캘린더 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void openCustomCalendar(String calendarId, String calendarName) {
