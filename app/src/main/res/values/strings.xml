@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GCalendars</string>
+    <string name="app_name">Group Calendars</string>
     <string name="date_schedule">해당 날짜의 일정</string>
     <string name="main_page">메인 페이지</string>
     <string name="personal_calendar">개인 캘린더</string>
