@@ -24,14 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 public class AddEvent extends AppCompatActivity {
-
     private EditText eventStartDateEditText;
     private EditText eventEndDateEditText;
     private EditText eventTitleEditText;
     private EditText eventContentEditText;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String collectionName;
-
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
 
     @Override
@@ -55,6 +53,7 @@ public class AddEvent extends AppCompatActivity {
         saveButton.setOnClickListener(v -> saveEvent(privacyRadioGroup));
     }
 
+    // 일정 날짜 선택 다이얼로그 함수
     private void showDatePickerDialog(EditText editText) {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -72,7 +71,7 @@ public class AddEvent extends AppCompatActivity {
         datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
         datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
     }
-
+    // 일정 저장
     private void saveEvent(RadioGroup privacyRadioGroup) {
         String startDate = eventStartDateEditText.getText().toString();
         String endDate = eventEndDateEditText.getText().toString();
@@ -102,6 +101,7 @@ public class AddEvent extends AppCompatActivity {
         }
     }
 
+    // 날짜를 선택한 시작 날짜부터 끝 날짜까지 기간의 날짜정보를 리스트 형태로 반환해주는 함수
     private List<String> getDatesBetween(String startDate, String endDate) {
         List<String> dates = new ArrayList<>();
         LocalDate start = LocalDate.parse(startDate, formatter);
@@ -114,6 +114,7 @@ public class AddEvent extends AppCompatActivity {
         return dates;
     }
 
+    // 공개 비공개 라디오버튼 확인하여 문자열값 반환하는 함수
     private String getPrivacySelection(RadioGroup privacyRadioGroup) {
         int selectedId = privacyRadioGroup.getCheckedRadioButtonId();
         return (selectedId == R.id.radioPublic) ? "public" : "private";

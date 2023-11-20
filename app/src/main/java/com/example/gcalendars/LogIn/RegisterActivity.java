@@ -35,7 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerButton.setOnClickListener(v -> handleRegistration());
     }
-
+    // 회원가입 버튼 클릭시 개인정보 입력 관리 함수
     private void handleRegistration() {
         String username = usernameEditText.getText().toString();
         String password = passwordEditText.getText().toString();
@@ -61,13 +61,14 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
+    // "users" 노드에 사용자 정보 저장
     private void saveUserDataToDatabase(String uid, String username, String email) {
-        // "users" 노드에 사용자 정보 저장
         DatabaseReference userRef = databaseReference.child(uid);
         userRef.child("username").setValue(username);
         userRef.child("email").setValue(email);
     }
 
+    // 이메일 인증
     private void sendEmailVerification(FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(task -> {

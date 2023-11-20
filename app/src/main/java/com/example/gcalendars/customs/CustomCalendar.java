@@ -52,17 +52,63 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calendar_custom);
         initWidgets();
-
+        // 캘린더 아이디 및 캘린더 이름 할당
         collectionName = getIntent().getStringExtra("calendarId");
         String calendarName = getIntent().getStringExtra("calendarName");
         setTitle(calendarName);
-
         TextView calendarTitle = findViewById(R.id.calendarTitle);
         calendarTitle.setText(calendarName);
         setMonthView();
         setupButtons();
     }
 
+    // 레이아웃 위젯 아이디 초기화
+    private void initWidgets() {
+        calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
+        monthYearText = findViewById(R.id.monthYearTV);
+        dateTextView = findViewById(R.id.textDate);
+        dateTitle = findViewById(R.id.textDateTitle); // 초기화
+        dateContent = findViewById(R.id.textContent); // 초기화
+    }
+
+    // 첫 실행시에 커스텀 캘린더 초기화
+    private void setMonthView() {
+        monthYearText.setText(monthYearFromDate(selectedDate));
+        ArrayList<String> daysInMonth = daysInMonthArray(selectedDate);
+
+        CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, this);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
+        calendarRecyclerView.setLayoutManager(layoutManager);
+        calendarRecyclerView.setAdapter(calendarAdapter);
+    }
+
+    // 캘린더 상단의 년도와 월 표시 함수
+    private String monthYearFromDate(LocalDate date) {
+        DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("yy년 MM월");
+        return date.format(customFormatter);
+    }
+
+    // 달력의 날짜 셀 정렬 함수
+    private ArrayList<String> daysInMonthArray(LocalDate date) {
+        ArrayList<String> daysInMonthArray = new ArrayList<>();
+        YearMonth yearMonth = YearMonth.from(date);
+        int daysInMonth = yearMonth.lengthOfMonth();
+        LocalDate firstOfMonth = date.withDayOfMonth(1);
+        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
+        dayOfWeek %= 7;
+
+        for (int i = 0; i < 42; i++) {
+            if (i < dayOfWeek || i >= dayOfWeek + daysInMonth) {
+                daysInMonthArray.add("");
+            } else {
+                int dayOfMonth = i - dayOfWeek + 1;
+                daysInMonthArray.add(String.valueOf(dayOfMonth));
+            }
+        }
+        return daysInMonthArray;
+    }
+
+    // 일정 추가 삭제 수정 버튼 레이아웃 초기화 및 온클릭 함수 선언
     private void setupButtons() {
         Button addButton = findViewById(R.id.buttonAdd);
         Button deleteButton = findViewById(R.id.deleteBtn);
@@ -72,6 +118,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         editButton.setOnClickListener(v -> showEditEventDialog());
     }
 
+    // 일정추가 버튼 클릭시 addEvent 클래스 호출, 날짜와 collectionName 값 전달
     private void startAddEventActivity() {
         Intent intent = new Intent(CustomCalendar.this, AddEvent.class);
         intent.putExtra("selectedStartDate", formatDate(selectedDate));
@@ -80,35 +127,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         startActivity(intent);
     }
 
-    // 일정 수정 편집 기능 다이얼로그 오픈
-    private void showEditEventDialog() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Firestore에서 해당 일정을 찾기 위해 쿼리를 작성합니다.
-        db.collection(collectionName)
-                .whereArrayContains("dates", formatDate(selectedDate)) // 선택한 날짜가 포함된 문서를 찾습니다
-                .whereEqualTo("title", title) // 일정 제목과도 일치해야 합니다
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        List<String> datesFromDatabase = (List<String>) document.get("dates");
-                        if (datesFromDatabase != null) {
-                            arrayDates = new ArrayList<>(datesFromDatabase);
-                        }
-
-                        // EditEventDialog를 생성하고 표시합니다.
-                        EditEventDialog editDialog = new EditEventDialog(this, title, formatDate(selectedDate), arrayDates, content, privacy, collectionName);
-                        editDialog.show();
-                        break; // 첫 번째 일치하는 문서만 처리
-                    }
-                });
-    }
-
-
-    private String formatDate(LocalDate date) {
-        return date == null ? "" : date.format(formatter);
-    }
-
+    // 일정 삭제 버튼 클릭 함수
     private void deleteEventsForSelectedDate(LocalDate selectedDate) {
         String formattedDate = formatDate(selectedDate);
 
@@ -138,60 +157,48 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 });
     }
 
+    // 일정 수정 편집 기능 다이얼로그 오픈
+    private void showEditEventDialog() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private void initWidgets() {
-        calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
-        monthYearText = findViewById(R.id.monthYearTV);
-        dateTextView = findViewById(R.id.textDate);
-        dateTitle = findViewById(R.id.textDateTitle); // 초기화
-        dateContent = findViewById(R.id.textContent); // 초기화
+        // Firestore에서 해당 일정을 찾기 위해 쿼리를 작성합니다.
+        db.collection(collectionName)
+                .whereArrayContains("dates", formatDate(selectedDate)) // 선택한 날짜가 포함된 문서를 찾습니다
+                .whereEqualTo("title", title) // 일정 제목과도 일치해야 합니다
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        List<String> datesFromDatabase = (List<String>) document.get("dates");
+                        if (datesFromDatabase != null) {
+                            arrayDates = new ArrayList<>(datesFromDatabase);
+                        }
+
+                        // EditEventDialog를 생성하고 표시합니다.
+                        EditEventDialog editDialog = new EditEventDialog(this, title, formatDate(selectedDate), arrayDates, content, privacy, collectionName);
+                        editDialog.show();
+                        break; // 첫 번째 일치하는 문서만 처리
+                    }
+                });
     }
 
-    private void setMonthView() {
-        monthYearText.setText(monthYearFromDate(selectedDate));
-        ArrayList<String> daysInMonth = daysInMonthArray(selectedDate);
-
-        CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, this);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
-        calendarRecyclerView.setLayoutManager(layoutManager);
-        calendarRecyclerView.setAdapter(calendarAdapter);
+    // 현재 날짜 변수 초기화 null 값일경우  "" 공백 할당 아닐경우 현재 날짜 할당
+    private String formatDate(LocalDate date) {
+        return date == null ? "" : date.format(formatter);
     }
 
-    private ArrayList<String> daysInMonthArray(LocalDate date) {
-        ArrayList<String> daysInMonthArray = new ArrayList<>();
-        YearMonth yearMonth = YearMonth.from(date);
-        int daysInMonth = yearMonth.lengthOfMonth();
-        LocalDate firstOfMonth = date.withDayOfMonth(1);
-        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
-        dayOfWeek %= 7;
-
-        for (int i = 0; i < 42; i++) {
-            if (i < dayOfWeek || i >= dayOfWeek + daysInMonth) {
-                daysInMonthArray.add("");
-            } else {
-                int dayOfMonth = i - dayOfWeek + 1;
-                daysInMonthArray.add(String.valueOf(dayOfMonth));
-            }
-        }
-
-        return daysInMonthArray;
-    }
-
-    private String monthYearFromDate(LocalDate date) {
-        DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("yy년 MM월");
-        return date.format(customFormatter);
-    }
-
+    // 이전 달로 넘기는 버튼 클릭 함수
     public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
         setMonthView();
     }
 
+    // 다음 달로 넘기는 버튼 클릭 함수
     public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
         setMonthView();
     }
 
+    // 날짜 클릭시 해당 날짜에 일정 유무 판별해서 값 표시하는 함수
     @Override
     public void onItemClick(int position, String dayText) {
         if (!dayText.equals("")) {
@@ -207,6 +214,7 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
         }
     }
 
+    // 달력의 날짜 선택시 처리되는 코드
     private void displayEventsForDate(LocalDate clickedDate) {
         String formattedDate = clickedDate.format(formatter);
 
@@ -267,24 +275,26 @@ public class CustomCalendar extends AppCompatActivity implements CalendarAdapter
                 });
     }
 
+    // 점세개 네비게이션 메뉴 초기화
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.nav_menu, menu);
         return true;
     }
 
+    // 점세개 열면 나오는 버튼들의 기능
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_profile_settings) {
+        if (id == R.id.menu_profile_settings) { // 개인 설정 화면 이동
             Intent intent = new Intent(this, personalSettings.class);
             intent.putExtra("calendarId", collectionName);
             startActivity(intent);
             return true;
-        } else if (id == R.id.move_to_main) {
+        } else if (id == R.id.move_to_main) { // 메인화면 이동
             startActivity(new Intent(this, MainActivity.class));
             return true;
-        }else if (id == R.id.menu_share_calendar) {
+        } else if (id == R.id.menu_share_calendar) { // 친구 관리 화면 이동
             // "친구 관리" 버튼을 눌렀을 때의 동작
             startActivity(new Intent(this, FriendsActivity.class));
             return true;

@@ -33,13 +33,12 @@ public class EditEventDialog extends Dialog {
     private String privacy;
     private final String collectionName;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     private EditText titleEditText;
     private EditText startDateEditText;
     private EditText endDateEditText;
     private EditText contentEditText;
-
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
+    // 외부에서 받아오는 다이얼로그의 변수 선언 및 초기화
     public EditEventDialog(Context context, String title, String selectedDate, List<String> dates, List<String> content, String privacy, String collectionName) {
         super(context);
         this.title = title;
@@ -93,9 +92,10 @@ public class EditEventDialog extends Dialog {
             }
         });
 
+        // 취소 버튼 클릭시 다이얼로그 닫는 함수
         cancelButton.setOnClickListener(v -> dismiss());
     }
-
+    // 일정 정보를 Firebase에 업데이트 하는 함수
     private void updateEventInFirestore(String updatedTitle, String updatedStartDate, String updatedEndDate, List<String> updatedContent, String updatedPrivacy) {
         db.collection(collectionName)
                 .whereArrayContains("dates", selectedDate)
@@ -130,6 +130,7 @@ public class EditEventDialog extends Dialog {
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "일정 업데이트 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
     }
 
+    // 시작 날짜 선택 다이얼로그 함수
     private void showStartDateDialog() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -147,7 +148,7 @@ public class EditEventDialog extends Dialog {
         datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
         datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
     }
-
+    // 종료 날짜 선태 다이얼로그 함수
     private void showEndDateDialog() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -165,7 +166,7 @@ public class EditEventDialog extends Dialog {
         datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE);
         datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
     }
-
+    // 리스트로 기간 정보 반환하는 함수
     private List<String> getDatesBetween(String startDate, String endDate) {
         List<String> dates = new ArrayList<>();
         LocalDate start = LocalDate.parse(startDate, formatter);

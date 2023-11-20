@@ -74,6 +74,7 @@ public class FriendsActivity extends AppCompatActivity {
         loadFriendsList();
         loadFriendRequests();
     }
+    
     // '추가' 버튼 클릭 시 호출
     private void onAddFriendClick() {
         String friendEmail = editTextFriendEmail.getText().toString();
@@ -96,6 +97,7 @@ public class FriendsActivity extends AppCompatActivity {
         showFriendRequestDialog(friend);
     }
 
+    // email을 통한 Firebase의 사용자 유무 판별 및 이미 추가된 친구인지 확인하는 함수
     private void findFriendAndSendRequest(String friendEmail) {
         DatabaseReference usersRef = databaseReference.child("users");
         usersRef.orderByChild("email").equalTo(friendEmail).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -110,7 +112,7 @@ public class FriendsActivity extends AppCompatActivity {
                         if (isFriendAlreadyAdded(friendID)) {
                             Toast.makeText(FriendsActivity.this, friendName + "님은 이미 추가된 친구입니다.", Toast.LENGTH_SHORT).show();
                         } else {
-                            sendFriendRequest(friendID, friendName);
+                            sendFriendRequest(friendID, friendName); 
                         }
                         isFriendAlreadyAdded = true;
                     }
@@ -138,6 +140,7 @@ public class FriendsActivity extends AppCompatActivity {
         return false;
     }
 
+    // realtime database에 친구요청 관련 함수
     private void sendFriendRequest(String friendID, String friendName) {
         DatabaseReference friendRequestsRef = databaseReference.child("users").child(friendID).child("friend-requests");
 
@@ -167,6 +170,7 @@ public class FriendsActivity extends AppCompatActivity {
         void onError(String errorMessage);
     }
 
+    // 유저이름이 정상적으로 존재하는지 확인하여 값을 가져오는 함수
     private void getCurrentUserName(CurrentUserNameCallback callback) {
         DatabaseReference userRef = databaseReference.child("users").child(currentUserID).child("username");
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -267,15 +271,44 @@ public class FriendsActivity extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
+    // 캘린더 공유 정보 전달하는 함수
     private void shareSelectedCalendar(String calendarId, String calendarName, String selectedFriendID) {
         String shareMessage = "선택한 캘린더 " + calendarName + " 를 상대방에게 공유합니다.";
         Toast.makeText(this, shareMessage, Toast.LENGTH_SHORT).show();
-
-        // 상대방에게 캘린더를 공유하는 작업 수행
         sendShareRequestToFriend(selectedFriendID, calendarName, calendarId);
     }
 
+    // 상대방에게 캘린더를 공유하는 작업 수행
+    private void sendShareRequestToFriend(String friendID, String groupCalendarName, String groupID) {
+        DatabaseReference friendRequestsRef = databaseReference.child("users").child(friendID).child("group-calendar-requests").child(groupID);
+
+        // 요청 정보를 생성하여 저장
+        friendRequestsRef.child("groupID").setValue(groupID);
+        friendRequestsRef.child("groupCalendarName").setValue(groupCalendarName);
+        friendRequestsRef.child("status").setValue("pending"); // 요청 상태를 "대기 중"으로 설정
+
+        // 사용자의 이름 가져오기
+        DatabaseReference userNameRef = databaseReference.child("users").child(currentUserID).child("username");
+        userNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String userName = dataSnapshot.getValue(String.class);
+                if (userName != null) {
+                    friendRequestsRef.child("username").setValue(userName);
+                    Toast.makeText(FriendsActivity.this, "그룹 캘린더 공유 요청을 보냈습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FriendsActivity.this, "사용자 이름을 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(FriendsActivity.this, "사용자 이름을 가져오는 동안 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // 친구 요청목록 리스트의 레이아웃 클릭시 호출 함수
     private void showFriendRequestDialog(Friend friend) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("친구 요청");
@@ -292,6 +325,7 @@ public class FriendsActivity extends AppCompatActivity {
         negativeButton.setTextColor(ContextCompat.getColor(this, R.color.black)); // R.color.black는 원하는 색상 리소스로 변경
     }
 
+    // 친구 요청 수락 함수
     private void acceptFriendRequest(Friend friend) {
         String friendId = friend.getFriendID();
         String friendName = friend.getFriendName();
@@ -341,8 +375,7 @@ public class FriendsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "친구 요청 수락 후 삭제 시 오류 발생: " + e.getMessage()));
     }
-
-
+    // 친구 요청 거절 함수
     private void rejectFriendRequest(Friend friend) {
         DatabaseReference currentUserRequestsRef = databaseReference.child("users").child(currentUserID).child("friend-requests");
         currentUserRequestsRef.child(friend.getFriendID()).removeValue()
@@ -354,7 +387,7 @@ public class FriendsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "친구 요청 거부 후 삭제 시 오류 발생: " + e.getMessage()));
     }
-
+    // 친구목록 초기화 함수
     private void loadFriendsList() {
         DatabaseReference databaseRef = databaseReference.child("users").child(currentUserID).child("friends");
         databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -380,7 +413,7 @@ public class FriendsActivity extends AppCompatActivity {
             }
         });
     }
-
+    // 친구 요청 리스트 초기화 함수
     private void loadFriendRequests() {
         DatabaseReference friendRequestsRef = databaseReference.child("users").child(currentUserID).child("friend-requests");
         friendRequestsRef.addValueEventListener(new ValueEventListener() {
@@ -418,44 +451,13 @@ public class FriendsActivity extends AppCompatActivity {
             }
         });
     }
-
+    // 자신의 친구목록 업데이트 관련 함수
     private void updateFriendsList(Friend friend) {
         // 본인의 친구 목록 업데이트
         friendsList.add(new Friend(friend.getFriendID(), friend.getFriendName(), true));
         adapter.notifyDataSetChanged();
     }
-
-    private void sendShareRequestToFriend(String friendID, String groupCalendarName, String groupID) {
-        DatabaseReference friendRequestsRef = databaseReference.child("users").child(friendID).child("group-calendar-requests").child(groupID);
-
-        // 요청 정보를 생성하여 저장
-        friendRequestsRef.child("groupID").setValue(groupID);
-        friendRequestsRef.child("groupCalendarName").setValue(groupCalendarName);
-        friendRequestsRef.child("status").setValue("pending"); // 요청 상태를 "대기 중"으로 설정
-
-        // 사용자의 이름 가져오기
-        DatabaseReference userNameRef = databaseReference.child("users").child(currentUserID).child("username");
-        userNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String userName = dataSnapshot.getValue(String.class);
-                if (userName != null) {
-                    friendRequestsRef.child("username").setValue(userName);
-                    Toast.makeText(FriendsActivity.this, "그룹 캘린더 공유 요청을 보냈습니다.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(FriendsActivity.this, "사용자 이름을 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(FriendsActivity.this, "사용자 이름을 가져오는 동안 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-
+    // 그룹 캘린더 초대 요청 다이얼로그 함수
     public static void showGroupCalendarRequestDialog(Context context, String friendName, String groupID, String groupCalendarName) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -472,7 +474,7 @@ public class FriendsActivity extends AppCompatActivity {
         Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         negativeButton.setTextColor(ContextCompat.getColor(context, R.color.black)); // R.color.black는 원하는 색상 리소스로 변경
     }
-
+    // 그룹 초대 수락 함수
     private static void acceptGroupCalendarRequest(String groupID, String groupCalendarName) {
         // Firebase 초기화
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -491,7 +493,7 @@ public class FriendsActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e(TAG, "그룹 캘린더 공유 요청 수락 후 삭제 시 오류 발생: " + e.getMessage()));
         Log.d(TAG, "그룹 캘린더 공유 요청을 수락했습니다.");
     }
-
+    // 그룹 초대 거절 함수
     private static void rejectGroupCalendarRequest(String groupID) {
         // Firebase 초기화
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();

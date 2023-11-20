@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         Button forgotPasswordButton = findViewById(R.id.forgotPasswordButton);
         forgotPasswordButton.setOnClickListener(v -> handleForgotPassword());
     }
-
+    // 로그인 버튼 및 아이디 비번 입력 관련 함수
     private void handleLogin() {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    // 비밀번호 재설정 함수
     private void handleForgotPassword() {
         String emailAddress = emailEditText.getText().toString();
 

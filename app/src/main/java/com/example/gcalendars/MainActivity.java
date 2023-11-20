@@ -50,18 +50,19 @@ public class MainActivity extends AppCompatActivity {
         Button buttonAddCalendar = findViewById(R.id.addButton);
         buttonAddCalendar.setOnClickListener(v -> showAddCalendarDialog());
     }
-
+    // 캘린더 생성 버튼 처리 함수
     private void showAddCalendarDialog() {
         AddCalendarDialog addCalendarDialog = new AddCalendarDialog(this);
         addCalendarDialog.show();
     }
 
+    // 내비게이션 메뉴 활성화 함수
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.nav_menu, menu);
         return true;
     }
-
+    // 네비게이션 메뉴 항목 함수
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    // 사용자가 보유한 캘린더 리스트 형식으로 화면에 불러오는 함수
     private void loadUserCalendars() {
         String userUid = user.getUid();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userUid);
@@ -108,8 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
+    // 캘린더 정보를 받아서 버튼형식으로 생성하는 함수
     private void createCalendarButtons(List<UserCalendar> userCalendars) {
         // 기존 버튼을 모두 제거
         calendarButtonsLayout.removeAllViews();
@@ -131,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
             calendarButtonsLayout.addView(calendarButton);
         }
     }
+    // 캘린더 삭제 함수
     private void showDeleteDialog(String calendarId, String calendarName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("캘린더 삭제");
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         setDialogButtonColors(alertDialog);
         alertDialog.show();
     }
-
+    // 다이얼로그 버튼 컬러 설정 함수
     private void setDialogButtonColors(AlertDialog alertDialog) {
         alertDialog.setOnShowListener(dialogInterface -> {
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.blue));
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // firesbase에서 캘린더 정보 삭제 하는 함수
     private void deleteCalendar(String calendarId, String userID) {
         DatabaseReference calendarsRef = databaseReference.child("users").child(userID).child("calendars").child(calendarId);
         DatabaseReference groupCalendarsRef = databaseReference.child("users").child(userID).child("group-calendar").child(calendarId);
@@ -183,15 +186,15 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "캘린더 삭제 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                 });
     }
-
+    // 캘린더 버튼 클릭시 해당 커스텀 캘린더 클래스로 이동하고 정보 전달
     private void openCustomCalendar(String calendarId, String calendarName) {
-        // 커스텀 캘린더 클래스로 이동하고 정보 전달
         Intent intent = new Intent(this, CustomCalendar.class);
         intent.putExtra("calendarId", calendarId);
         intent.putExtra("calendarName", calendarName);
         startActivity(intent);
     }
 
+    // 메인화면에서 그룹 요청을 받았을경우 다이얼로그를 통해 그룹 참가 및 거절을 선택할수있는 함수
     private void checkAndRespondToGroupCalendarRequests(String userID) {
         DatabaseReference userRef = databaseReference.child("users").child(userID).child("group-calendar-requests");
 

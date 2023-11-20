@@ -41,8 +41,12 @@ public class personalSettings extends AppCompatActivity {
 
         updateButton.setOnClickListener(v -> updateUsername());
         logoutButton.setOnClickListener(v -> logout());
+
+        // 메인 이동 함수
         Button exitButton = findViewById(R.id.exitButton);
         exitButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
+
+        // 캘린더 이동 함수
         Button exitCustomButton = findViewById(R.id.exitButton_to_Custom);
         exitCustomButton.setOnClickListener(v -> {
             Intent intent = new Intent(personalSettings.this, CustomCalendar.class);
@@ -51,7 +55,7 @@ public class personalSettings extends AppCompatActivity {
         });
 
     }
-
+    // 사용자 이름 업데이트 함수
     private void updateUsername() {
         String newUsername = usernameTextView.getText().toString();
 
@@ -69,6 +73,7 @@ public class personalSettings extends AppCompatActivity {
                     }
                 });
     }
+    // 로그아웃 기능
     private void logout() {
         mAuth.signOut();
         startActivity(new Intent(personalSettings.this, LoginActivity.class));

@@ -64,6 +64,7 @@ class AddCalendarDialog extends Dialog {
         cancelButton.setOnClickListener(view -> dismiss());
     }
 
+    //그룹 캘린더 생성 버튼 작용함수
     private void createGroup() {
         String groupName = calendarNameEditText.getText().toString().trim();
         if (groupName.isEmpty()) {
