@@ -2,7 +2,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center|top"
     android:padding="16dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launch"
+        android:layout_margin="20dp"
+        android:importantForAccessibility="no" />
 
     <EditText
         android:id="@+id/emailEditText"
@@ -17,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:hint="@string/inputPW"
         android:importantForAutofill="no"
         android:inputType="textPassword" />
@@ -32,20 +41,23 @@
             style="@style/BorderlessButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/loginLogo" />
+            android:text="@string/loginLogo"
+            android:layout_margin="5dp"/>
 
         <Button
             android:id="@+id/forgotPasswordButton"
             style="@style/BorderlessButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/forgotPW" />
+            android:text="@string/forgotPW"
+            android:layout_margin="5dp"/>
 
         <Button
             android:id="@+id/registerButton"
             style="@style/BorderlessButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/newAccount" />
+            android:text="@string/newAccount"
+            android:layout_margin="5dp"/>
     </LinearLayout>
 </LinearLayout>
